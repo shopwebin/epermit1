@@ -102,6 +102,7 @@ Route::get('/quantity/delete/{id}', [AdminController::class,'qty_delete']);
 
 Route::get('/market_fee/edit/{id}', [AdminController::class,'mfee_edit']);
 
+
 Route::get('/market_fee/delete/{id}', [AdminController::class,'mfee_delete']);
 
 Route::get('/send-mail',[AdminController::class,'send_mail']);
