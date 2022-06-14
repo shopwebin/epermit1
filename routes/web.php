@@ -107,6 +107,7 @@ Route::get('/market_fee/delete/{id}', [AdminController::class,'mfee_delete']);
 Route::get('/send-mail',[AdminController::class,'send_mail']);
 
 Route::get('/abc/{d}',[Trader_applyController::class,'abc1']);
+
 Route::get('/abc',[Trader_applyController::class,'abc']);
 
 Route::post('/pay',[Trader_applyController::class,'payment']);
