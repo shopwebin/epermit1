@@ -145,12 +145,12 @@
                                 });
                             });
                         });
-                        $(document).ready(function() {
+                        /*$(document).ready(function() {
                             $(".trade_value").change(function() {
                                 var w = $('.trade_value').val();
-                                $('.mfee').val(w*{{$mfee[0]->percent}}/50);
+                                $('.mfee').val(w*{{$mfee[0]->percent}}/100);
                             });
-                        });         
+                        });*/         
                         $(document).ready(function() {      
                             $(".fd").change(function() {
                                 var w = $(".fd").val();
@@ -180,15 +180,38 @@
                                 }
                             });
                         });
+                        function com_val_1(a){
+                            a=a.parent().parent();
+                            var c = a.find("#p_com_id").val();
+                            var q = a.find(".q_id").val();
+                            @foreach($view[0]->tc as $key=>$tc) 
+                            if({{$tc->com_id}} == c){
+                                a.find('.weight1').val({{ $tc->a_weight }});
+                            }
+                            @endforeach
+                            /*
+                                    var w = @if(isset($dat)){{ $dat->id }} @else {{$view[0]->id}} @endif;
+                                    if((c != '') && (q != '') ){
+                                    $.ajax({
+                                        type:'POST',
+                                        url: "com_val1",
+                                        data: { com:c, qty:q, id:w },
+                                        success:function(data){
+                                            console.log(data);
+                                            a.find('.weight1').val(data.weight);
+                                        }
+                                    });
+                                    }*/
+                        }
                     </script>
                     <div class="ordered-list col-12 repeat-div">
                         <div class="list com">
                             <div class="row">
-                                <div class="col-md-3 col-sm-6">
+                                <div class="col-md-2 col-sm-6">
                                     <div class="form-group">
                                         <label>Commodity <span class="text-danger">*</span></label>
-                                        <select name="p_com_id" id="p_com_id" class="form-control">
-                                                <option value="">Select</option>
+                                        <select name="p_com_id" id="p_com_id" class="form-control" onchange="com_val_1($(this).parent())">
+                                            <option value="">Select</option>
                                             @foreach( $view[0]->tc as $tc )
                                                 <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
                                             @endforeach
@@ -196,10 +219,10 @@
                                         <!-- input type="text" value="{{ $view[0]->tc[0]->com_name }}"  class="form-control pri-form" readonly -->
                                     </div>
                                 </div>
-                                <div class="col-md-3 col-sm-6">
+                                <div class="col-md-2 col-sm-6">
                                     <div class="form-group">
                                         <label> Proccessed Commodity <span class="text-danger">*</span></label>
-                                        <select name="com_id" class="com_id form-control pri-form">
+                                        <select name="com_id" class="com_id1 form-control pri-form">
                                             <option value="">-- Select --</option>
                                             @foreach($commodity as $com)
                                                 <option value="{{ $com->com_id }}">{{ $com->com_name }}</option>
@@ -210,8 +233,8 @@
                                 <div class="col-md-2 col-sm-6">
                                     <div class="form-group">
                                         <label>Quantity Type <span class="text-danger">*</span></label>
-                                        {{--<input type="" value="{{ $view[0]->tc[0]->qty_name }}" name="q_id" class="form-control pri-form" readonly>--}}
-                                        <select name="q_id" class="q_id form-control pri-form">
+                                        {{-- <input type="" value="{{ $view[0]->tc[0]->qty_name }}" name="q_id" class="form-control pri-form" readonly> --}}
+                                        <select name="q_id" class="q_id form-control pri-form" onchange="com_val_1($(this).parent())">
                                             <option value="{{ $view[0]->tc[0]->q_id }}">{{ $view[0]->tc[0]->qty_name }}</option>
                                         </select>
                                     </div>
@@ -234,6 +257,12 @@
                                         <input type="" value="" name="a_weight" class="a_weight1 form-control pri-form" >
                                     </div>
                                 </div>
+                                <div class="col-md-2 col-sm-4">
+                                    <div class="form-group">
+                                        <label>Trade Value <span class="text-danger">*</span></label>
+                                        <input type="" value="" name="trade_val" class="trade_value form-control pri-form" required>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="add-new" onclick="addcom(1)"><i class="priya-plus"></i></div>
@@ -244,18 +273,12 @@
                             <input type="" name="trade_id" value="@if(isset($dat))T{{ $dat->id }} @else T{{$view[0]->id}} @endif" class="form-control pri-form" readonly>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Trade Value <span class="text-danger">*</span></label>
-                            <input type="" value="" name="trade_val" class="trade_value form-control pri-form" required>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    <!-- div class="col-md-4">
                         <div class="form-group">
                             <label>Market Fee (INR) <span class="text-danger">*</span></label>
                             <input type="" name="mfee" value="" class="mfee form-control pri-form" readonly required>
                         </div>
-                    </div>
+                    </div-->
                     <div class="col-md-4">
                             <div class="form-group">
                                 <label> Source Address <span class="text-danger">*</span></label>
@@ -435,14 +458,15 @@
                                 }
                             });
 
-                        $(document).ready(function() {
-                            $("#p_com_id").change(function(){                                
-                                // $.get("{{url('com_tc')}}/{{$view[0]->id}}/" + $(this).val(), function(result){
-                                $.get("{{url('com_tc')}}/" + $(this).val(), function(result){
-                                    console.log(result);
+                            /*$(document).ready(function() {
+                                $("#p_com_id").change(function(){                                
+                                    // $.get("{{url('com_tc')}}/{{$view[0]->id}}/" + $(this).val(), function(result){
+                                    $.get("{{url('com_tc')}}/" + $(this).val(), function(result){
+                                        console.log(result);
+                                    });
                                 });
-                            });
-                        });
+                            });*/
+
                             $(document).ready(function() {
                                 $(".state").change(function() {
                                     $.get("{{url('district')}}/" + $(this).val(), function(result) {

@@ -35,7 +35,7 @@
                     <tbody>
                         @foreach($dat as $td)
                         @php
-                            $td->cty = '';
+                            /* $td->cty = '';
                             $td->weight = 0;
                             $td->a_weight = 0;
                             $td->trade_value = 0;
@@ -65,18 +65,22 @@
                             $td->cty = join(",",$cty);
                             $td->cty = substr($td->cty,1);
                             $td->weight = substr($td->weight,1);
-                            $td->a_weight = substr($td->a_weight,1);
-                        @endphp
+                            $td->a_weight = substr($td->a_weight,1);*/
+                            @endphp
+                            @foreach($td->trade_com as $key => $tc)
                         <tr>
-                            <td data-id="{{ $td->id }}" data-p_status="{{ $td->id }}">T{{ $td->id }}</td>
-                            <td>{{ $td->trade_type }}</td>
-                            <td>{{ $td->amc }}</td>
-                            <td>{{explode(' ',$td->created_at)[0]}}</td>
-                            <td>{{ $td->cty }}</td>
-                            <td>{{ $td->weight }} {{--$td->qty--}}</td>
-                            <td>{{ $td->a_weight }} {{--$td->qty--}}</td>
-                            <td>Rs {{ $td->trade_value }}</td>
-                            <td>
+                            @if($key == 0)
+                            <td rowspan="{{count($td->trade_com)}}" data-id="{{ $td->id }}" data-p_status="{{ $td->id }}">T{{ $td->id }}</td>
+                            <td rowspan="{{count($td->trade_com)}}">{{ $td->trade_type }}</td>
+                            <td rowspan="{{count($td->trade_com)}}">{{ $td->amc }}</td>
+                            <td rowspan="{{count($td->trade_com)}}">{{explode(' ',$td->created_at)[0]}}</td>
+                            @endif
+                            <td>{{$tc->cty}}</td>
+                            <td>{{$tc->weight}}</td>
+                            <td>{{$tc->a_weight}}</td>
+                            <td>{{$tc->trade_value}}</td>
+                            @if($key == 0)
+                            <td rowspan="{{count($td->trade_com)}}">
                                 @if($td->p_status % 2 == 0)
                                     <button data-id="{{ $td->id }}" type="button" class="btn btn-info pay" onclick="helpModal('#pay-mode-modal')">Pay Fee</button>
                                 @else
@@ -106,8 +110,9 @@
                                 @if($td->p_status % 2 != 0)
                                     <a href="edit-trade/T{{ $td->id }}" class="btn btn-info">Edit Trade</a>
                                 @endif
-                            </td>
+                            </td>@endif
                         </tr>
+                        @endforeach
                         @endforeach
                     </tbody>
                 </table>
@@ -174,3 +179,6 @@
 </script>
 </body>
 </html>
+                            <!-- {{-- $td->cty }} <td>{{ $td->weight }} {{--$td->qty--}}</td>
+                            <td>{{ $td->a_weight }} {{--$td->qty--}}</td>
+                            <td>Rs {{ $td->trade_value --}}</td> -->

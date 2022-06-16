@@ -80,7 +80,7 @@ Route::get('/commodity_weight/{id}', [Trader_applyController::class,'find_weight
 
 Route::get('/trade-list', [Trader_applyController::class,'show']);
 
-Route::get('/permit-creation/{id}',  [Trader_applyController::class,'permitCreating1']);
+Route::get('/permit-creation/{id}', [Trader_applyController::class,'permitCreating1']);
 
 Route::get('/pay/{id}', [Trader_applyController::class,'pay']);
 
@@ -90,11 +90,9 @@ Route::get('/trader/{id}',[Trader_applyController::class,'find_trader']);
 
 Route::get('/print-permit/{id}',[Trader_applyController::class,'print_permit']);
 
-// Route::get('/com_value/{id}',[Trader_applyController::class,'abc']);
+Route::get('/com_value/{id}',[Trader_applyController::class,'com_value']);
 
-// Route::get('com_tc/{id}',[Trader_applyController::class,'abc']);
-
-// Route::get('/com_tc/{tc}/{id}',[Trader_applyController::class,'abc']);
+Route::get('/com', [Trader_applyController::class,'com']);
 
 Route::get('/quantity/edit/{id}', [AdminController::class,'qty_edit']);
 
@@ -106,9 +104,9 @@ Route::get('/market_fee/delete/{id}', [AdminController::class,'mfee_delete']);
 
 Route::get('/send-mail',[AdminController::class,'send_mail']);
 
-Route::get('/abc/{d}',[Trader_applyController::class,'abc1']);
-
 Route::get('/abc',[Trader_applyController::class,'abc']);
+
+Route::post('/abc1',[Trader_applyController::class,'abc1']);
 
 Route::post('/pay',[Trader_applyController::class,'payment']);
 
@@ -137,6 +135,8 @@ Route::post('/permit/primary/edit/{id}', [Trader_applyController::class,'edit_pr
 Route::post('/trade-list/add', [Trader_applyController::class,'add']);
 
 Route::post('/trade-list', [Trader_applyController::class,'show']);
+
+Route::post('/com_val1',[Trader_applyController::class,'com_val1']);
 
 Route::post('/com_val',[CommodityController::class,'com_val']);
 
