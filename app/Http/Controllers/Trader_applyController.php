@@ -88,10 +88,6 @@ class Trader_applyController extends Controller
         return $a;
     }
 
-    public function com_value1($id){
-        var_dump($id);
-    }
-
     public function com_tc($id){
         var_dump($id);
         // $a = DB::select('SELECT * FROM `trade_com` WHERE `tc_id` = ? AND `com_id` = ?',[$tc,$id])[0];
@@ -102,21 +98,30 @@ class Trader_applyController extends Controller
     {
         $input = $request->all();
         $input['trade_id'] = substr($input['trade_id'],1);
-        $a = DB::update('update trade set ad1 = ?,ad2 = ?, commodity_id = ?, trade_value=?,m_fee=?,a_weight=? where id = ?', [$input['ad1'],$input['ad2'],$input['com_id'],$input['trade_val'],$input['mfee'],$input['trade_id'],$input['a_weight']]);
+        // $a = DB::update('update trade set ad1 = ?,ad2 = ? where id = ?', [$input['ad1'],$input['ad2'],$input['trade_id']]);
+        // $a = DB::update('update trade set ad1 = ?,ad2 = ?, commodity_id = ?, trade_value=?,m_fee=?,a_weight=? where id = ?', [$input['ad1'],$input['ad2'],$input['com_id'],$input['trade_val'],$input['mfee'],$input['trade_id'],$input['a_weight']]);
         $b = DB::table('p_permit')->insertGetId([
-            'c_id'=>$input['com_id'],
-            'q_id'=>$input['q_id'],
-            'b_qty'=>$input['b_qty'],
-            'a_qty'=>$input['a_weight'],
+            /* 'c_id'=>$input['com_id'],
+                'q_id'=>$input['q_id'],
+                'b_qty'=>$input['b_qty'],
+                'a_qty'=>$input['a_weight'],
+                'mfee'=>$input['mfee'],
+                'trade_val'=>$input['trade_val'],*/
             't_id'=>$input['trade_id'],
-            'mfee'=>$input['mfee'],
-            'trade_val'=>$input['trade_val'],
             'ad1'=>$input['ad1'],
             'ad2'=>$input['ad2'],
             'veh_no'=>$input['veh_no'],
             'mobile'=>$input['phone'],
             'from_date'=>$input['fd']." ".$input['ft'],
             'to_date'=>$input['td']." ".$input['ft']
+        ]);
+        $a = DB::table('multi_permit')->insertGetId([
+            'c_id'=>$input['com_id'],
+            'q_id'=>$input['q_id'],
+            'b_qty'=>$input['b_qty'],
+            'a_qty'=>$input['a_weight'],
+            'mfee'=>$input['mfee'],
+            'trade_val'=>$input['trade_val'],
         ]);
         return redirect('print-permit/PP'.$b)->with('alert',"Trade processed permit no.-PP".$b." Sucessfully");
     }
@@ -392,13 +397,27 @@ class Trader_applyController extends Controller
         $data['dat'] = $input;
         return view('ccavenue',$data);
     }
-
-    public function abc(){
-        var_dump("id");
+    
+    public function com_val1(Request $request)
+    {
+        $input = $request->all();
+        var_dump($input);
+        /*DB::enableQueryLog();
+        $a = DB::table('trade_com')->where('t_id',$input['id'])->where('q_id',$input['qty'])->where('com_id',$input['com'])->get('weight')[0];
+        var_dump(DB::getQueryLog());*/
         return 1;
     }
-    public function abc1($d){
+
+    public function com(){
         var_dump("kk");
+        return 1;
+    }
+    public function abc1(Request $request){
+        var_dump($request->all());
+        return 1;
+    }
+    public function abc(){
+        var_dump("id1");
         return 1;
     }
 }
