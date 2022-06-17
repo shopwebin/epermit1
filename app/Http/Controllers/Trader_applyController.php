@@ -113,17 +113,30 @@ class Trader_applyController extends Controller
             'veh_no'=>$input['veh_no'],
             'mobile'=>$input['phone'],
             'from_date'=>$input['fd']." ".$input['ft'],
-            'to_date'=>$input['td']." ".$input['ft']
+            'to_date'=>$input['td']." ".$input['ft'],
+            'invoice'=>$input['invoice']
         ]);
-        $a = DB::table('multi_permit')->insertGetId([
-            'c_id'=>$input['com_id'],
-            'q_id'=>$input['q_id'],
-            'b_qty'=>$input['b_qty'],
-            'a_qty'=>$input['a_weight'],
-            'mfee'=>$input['mfee'],
-            'trade_val'=>$input['trade_val'],
+        DB::enableQueryLog();
+        for($i=0;$i<count($input['com_id']);$i++){
+        $a[] = DB::table('multi_permit')->insertGetId([
+            'com_id'=>$input['com_id'][$i],
+            'q_id'=>$input['q_id'][$i],
+            'weight'=>$input['b_qty'][$i],
+            'a_weight'=>$input['a_weight'][$i],
+            // 'mfee'=>$input['mfee'][$i],
+            'trade_value'=>$input['trade_val'][$i],
+            'p_id'=>'PP'.$b,
+        ]); //->where('q_id','=','$input["q_id"][$i]')
+        DB::table('trade_com')->where('t_id','=','$input["trade_id"]','and')->where('com_id','=','$input["p_com_id"][$i]','and')->update([
+            'com_id'=> $input["com_id"][$i],
+            'q_id'=>$input['q_id'][$i],
+            'weight'=>$input['a_weight'][$i],
+            'a_weight'=>$input['a_weight'][$i],
+            'trade_value'=>$input['trade_val'][$i],
         ]);
-        return redirect('print-permit/PP'.$b)->with('alert',"Trade processed permit no.-PP".$b." Sucessfully");
+    }   
+    dd(DB::getQueryLog());
+        // return redirect('print-permit/PP'.$b)->with('alert',"Trade processed permit no.-PP".$b." Sucessfully");
     }
 
     public function print_permit($id)
@@ -132,16 +145,26 @@ class Trader_applyController extends Controller
         $data = [];        
         if ($id[0] == 'P'){
             if($id[1] == 'P'){
-                $data['dat'] = $trade->print_processing(substr($id,2))[0];
-                // var_dump($data['dat']->to_date);
-                $data['dat']->a_weight = $data['dat']->b_qty;
-                $data['dat']->value = $data['dat']->trade_val;
+                $data['dat'] = $trade->print_processing(substr($id,2));
+                // var_dump($data['dat']);
+                // $data['dat']->a_weight = $data['dat']->b_qty;
+                // $data['dat']->value = $data['dat']->trade_val;
                 $data['dat']->veh_detail = $data['dat']->veh_no;
                 $data['dat']->valid_from = $data['dat']->from_date;
                 $data['dat']->valid_to = $data['dat']->to_date;
                 $data['dt'] = explode(' ', $data['dat']->to_date);
                 $data['df'] = explode(' ', $data['dat']->from_date);
                 $data['type'] = 'Commodity Processing ';
+                $data['a_weight'] = '';
+                $data['com_name'] = '';
+                $data['value'] = 0;
+                $data['qty_name'] = '';
+                foreach($data['dat']->mp as $mp){
+                    $data['a_weight'] .= ','.$mp->a_weight;
+                    $data['com_name'] .= ','.$mp->com_name;
+                    $data['value'] += $mp->trade_value;
+                    $data['qty_name'] .= ','.$mp->qty_name;
+                }
             }
             else{
                 $data['dat'] = $trade->primary1(substr($id, 1))[0];
@@ -214,7 +237,6 @@ class Trader_applyController extends Controller
             }
             $data['type'] = 'Secondary';
         }
-        // dd(DB::getQueryLog());
         return view('secondary-permit',$data);
     }
 

@@ -107,15 +107,15 @@
             </tr-->
             <tr>
                 <td>Commodity:</td>
-                <td>{{$dat->com_name}}</td>
+                <td>{{ substr($com_name,1) }}</td>
                 <td>Quantity:</td>
-                <td>{{$dat->a_weight}}.00</td>
+                <td>{{ substr($a_weight,1) }}</td>
             </tr>
             <tr>
                 <td>Sale value (INR):</td>
-                <td>{{$dat->value}}.00</td>
+                <td>{{ $value }}.00</td>
                 <td>Quantity Type:</td>
-                <td>{{$dat->qty_name}}</td>
+                <td>{{ substr($qty_name,1) }}</td>
             </tr>
             <tr>
                 <td>Transport Vehicle:</td>

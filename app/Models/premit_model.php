@@ -105,7 +105,9 @@ class premit_model extends Model
     }
 
     public function print_processing($id){
-        $q = DB::select('SELECT p_permit.*,quantity.qty_name,trader_apply.*,trade.seller_name as name,commodity.com_name  FROM `p_permit` JOIN commodity on commodity.com_id = p_permit.c_id JOIN quantity on quantity.id = p_permit.q_id JOIN trade on trade.id = p_permit.t_id join trader_apply on trader_apply.id = trade.trader_id where p_permit.id = ?', [$id]);
+        $q = DB::select('SELECT p_permit.*,trader_apply.*,trade.seller_name as name  FROM `p_permit` JOIN trade on trade.id = p_permit.t_id join trader_apply on trader_apply.id = trade.trader_id where p_permit.id = ?', [$id])[0];
+        // var_dump($q);
+        $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "PP'.$id.'"');
         // $q = DB::select('SELECT p_permit.*,quantity.qty_name,trader.name,trader.lic_no FROM `p_permit` JOIN commodity on commodity.com_id = p_permit.c_id JOIN quantity on quantity.id = p_permit.q_id JOIN trade on trade.id = p_permit.t_id join trader on trader.id = trade.trader_id where p_permit.id = ?', [$id]);
         // var_dump($q);
         return $q;

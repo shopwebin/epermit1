@@ -210,7 +210,7 @@
                                 <div class="col-md-2 col-sm-6">
                                     <div class="form-group">
                                         <label>Commodity <span class="text-danger">*</span></label>
-                                        <select name="p_com_id" id="p_com_id" class="form-control" onchange="com_val_1($(this).parent())">
+                                        <select name="p_com_id[]" id="p_com_id" class="form-control" onchange="com_val_1($(this).parent())">
                                             <option value="">Select</option>
                                             @foreach( $view[0]->tc as $tc )
                                                 <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
@@ -222,7 +222,7 @@
                                 <div class="col-md-2 col-sm-6">
                                     <div class="form-group">
                                         <label> Proccessed Commodity <span class="text-danger">*</span></label>
-                                        <select name="com_id" class="com_id1 form-control pri-form">
+                                        <select name="com_id[]" class="com_id1 form-control pri-form">
                                             <option value="">-- Select --</option>
                                             @foreach($commodity as $com)
                                                 <option value="{{ $com->com_id }}">{{ $com->com_name }}</option>
@@ -234,7 +234,7 @@
                                     <div class="form-group">
                                         <label>Quantity Type <span class="text-danger">*</span></label>
                                         {{-- <input type="" value="{{ $view[0]->tc[0]->qty_name }}" name="q_id" class="form-control pri-form" readonly> --}}
-                                        <select name="q_id" class="q_id form-control pri-form" onchange="com_val_1($(this).parent())">
+                                        <select name="q_id[]" class="q_id form-control pri-form" onchange="com_val_1($(this).parent())">
                                             <option value="{{ $view[0]->tc[0]->q_id }}">{{ $view[0]->tc[0]->qty_name }}</option>
                                         </select>
                                     </div>
@@ -242,25 +242,25 @@
                                 <!-- <div class="col-md-2 col-sm-4">
                                     <div class="form-group">
                                         <label>Balance Quantity <span class="text-danger">*</span></label>
-                                        <input type="" value="0" name="q_id" class="form-control pri-form" readonly>
+                                        <input type="" value="0" name="q_id[]" class="form-control pri-form" readonly>
                                     </div>
                                 </div> -->
                                 <div class="col-md-2 col-sm-4">
                                     <div class="form-group">
                                         <label>Quantity Before Processing<span class="text-danger">*</span></label>
-                                        <input type="" value="{{ $view[0]->a_weight }}" name="b_qty" class="weight1 form-control pri-form" readonly>
+                                        <input type="" value="{{ $view[0]->a_weight }}" name="b_qty[]" class="weight1 form-control pri-form" readonly>
                                     </div>
                                 </div>
                                 <div class="col-md-2 col-sm-4">
                                     <div class="form-group">
                                         <label>Quantity After Processing<span class="text-danger">*</span></label>
-                                        <input type="" value="" name="a_weight" class="a_weight1 form-control pri-form" >
+                                        <input type="" value="" name="a_weight[]" class="a_weight1 form-control pri-form" >
                                     </div>
                                 </div>
                                 <div class="col-md-2 col-sm-4">
                                     <div class="form-group">
                                         <label>Trade Value <span class="text-danger">*</span></label>
-                                        <input type="" value="" name="trade_val" class="trade_value form-control pri-form" required>
+                                        <input type="" value="" name="trade_val[]" class="trade_value form-control pri-form" required>
                                     </div>
                                 </div>
                             </div>
@@ -301,6 +301,12 @@
                             <div class="form-group">
                                 <label>Mobile Number <span class="text-danger">*</span></label>
                                 <input type="number" name="phone" class="form-control pri-form mob_no" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="10">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Invoice/Receipt <span class="text-danger">*</span></label>
+                                <input type="" name="invoice" class="form-control pri-form invoice">
                             </div>
                         </div>
                         <div class="col-md-4">
