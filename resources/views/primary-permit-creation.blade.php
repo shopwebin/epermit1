@@ -55,19 +55,27 @@
                             });
                             $(document).ready(function() {
                                 $(".commodity").change(function() {
-                                    $.get("{{url('commodity_weight')}}/" + $(this).val(), function(result) {
+                                    /*$.get("{{url('commodity_weight')}}/" + $(this).val(), function(result) {
                                         // console.log(result[0]['wht']);
                                         $('.a_weight').val(result[0]['wht']);
-                                    });
+                                    });*/
                                 });
                             });
+                            function com_ch(a){
+                                a=a.parent().parent();
+                                @foreach($dat[0]->tc as $tc)
+                                    if($tc->com_id == a.find('.commodity').val()){
+                                        a.find('.bqty').html("Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset )");
+                                    }
+                                @endforeach                                
+                            }
                             $(document).ready(function() {
                                 $(".a_weight").change(function() {
-                                    var c = {{--$dat[0]->com_id}};
-                                    var q = {{$dat[0]->q_id--}};
+                                    var c = {{-- $dat[0]->com_id}};
+                                    var q = {{$dat[0]->q_id --}}0;
                                     var w = $('.a_weight').val();
                                     $('.bal_qty').val({{-- $dat[0]->qty+$dat[0]->a_weight --}}-w);
-                                    if(w > {{-- ($dat[0]->a_weight+$dat[0]->qty) --}}){
+                                    if(w > {{-- ($dat[0]->a_weight+$dat[0]->qty) --}}0){
                                                 alert("Kindly enter value below or equal available quantity");
                                                 $('.a_weight').val("{{ $dat[0]->a_weight }}");
                                                 $('.bal_qty').val({{-- $dat[0]->qty --}});
@@ -212,21 +220,33 @@
                                 </select>
                             </div>
                         </div>
+                <script>
+                    function addcom(id){
+                        if(id < {{ count($dat[0]->tc) }}){
+                        $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
+                        $('.pp').attr('onclick','addcom('+(id+1)+')');
+                    }}
+                    </script>
+                    <div class="ordered-list col-12 repeat-div">
+                        <div class="list com">
+                            <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label> Commodity <span class="text-danger">*</span></label>
                                 <select class="form-control pri-form commodity" name="com_id" required>
                                 @if($dat[0] != '')
-                                    <option value="{{-- $dat[0]->com_id --}}">{{-- $dat[0]->com_name --}}</option>
+                                @foreach($dat[0]->tc as $tc)
+                                    <option value="{{ $tc->com_id }}">{{ $tc->com_name }} in {{$tc->qty_name}}</option>
+                                @endforeach
                                 @else                                
                                     <option>Select</option>
                                 @endif 
                                 </select>
                             </div>
-                        </div>
+                        </div>                        
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label> Quantity(Balance Quantity {{-- ($dat[0]->a_weight+$dat[0]->qty) --}}@isset($dat[0]->qty_name) {{ $dat[0]->qty_name }} @endisset ) <span class="text-danger">*</span></label>
+                                <label class="bqty"> Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class="text-danger">*</span></label>
                                 <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight" class="form-control pri-form a_weight" required>
                                 <input type="hidden" name="bal_qty" class="bal_qty" value="{{-- $dat[0]->qty --}}">
                             </div>
@@ -236,6 +256,10 @@
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
                                 <input type="" name="value" class="trade_val form-control pri-form" @isset($dat[0]->value) value="{{$dat[0]->value}}" @endisset required>
                             </div>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="add-new pp" onclick="addcom(1)"><i class="priya-plus"></i></div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">

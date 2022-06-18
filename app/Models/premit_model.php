@@ -86,7 +86,7 @@ class premit_model extends Model
 
     public static function new($id){
         $quer = DB::select('Select trade.*,amc.name as amc from `trade` join `amc` on `amc`.`id` = `trade`.`amc_id` where `trade`.`id` = '.$id);
-        $quer[0]->mp = DB::select('select `trade_com`.*,quantity.qty_name,commodity.* from `trade_com` JOIN quantity on quantity.id = `trade_com`.q_id JOIN commodity on commodity.com_id = `trade_com`.com_id where t_id = "'.$id.'"');
+        $quer[0]->tc = DB::select('select `trade_com`.*,quantity.qty_name,commodity.* from `trade_com` JOIN quantity on quantity.id = `trade_com`.q_id JOIN commodity on commodity.com_id = `trade_com`.com_id where t_id = "'.$id.'"');
         return $quer;
     }
     public static function primary($id){

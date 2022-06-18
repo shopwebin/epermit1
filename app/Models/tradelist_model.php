@@ -153,9 +153,9 @@ class tradelist_model extends Model
     }
 
     public function ae_update($request){
-        DB::enableQueryLog();
+        // DB::enableQueryLog();
         return DB::update('update trade set ad1 = ?,ad2 = ?  where id = ?', [$request->input('ad1'),$request->input('ad2'),$request->input('id')]);
-        dd(DB::getQueryLog());
+        // dd(DB::getQueryLog());
     }
 
     public static function show(){
