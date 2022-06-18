@@ -89,9 +89,9 @@ class Trader_applyController extends Controller
     }
 
     public function com_tc($id){
-        var_dump($id);
-        // $a = DB::select('SELECT * FROM `trade_com` WHERE `tc_id` = ? AND `com_id` = ?',[$tc,$id])[0];
-        // return $a;
+        // var_dump($id);
+        $a = DB::select('SELECT * FROM `trade_com` WHERE `tc_id` = ? AND `com_id` = ?',[$tc,$id])[0];
+        return $a;
     }
 
     public function update_trade(Request $request)
@@ -116,7 +116,7 @@ class Trader_applyController extends Controller
             'to_date'=>$input['td']." ".$input['ft'],
             'invoice'=>$input['invoice']
         ]);
-        DB::enableQueryLog();
+        // DB::enableQueryLog();
         for($i=0;$i<count($input['com_id']);$i++){
         $a[] = DB::table('multi_permit')->insertGetId([
             'com_id'=>$input['com_id'][$i],
@@ -127,7 +127,7 @@ class Trader_applyController extends Controller
             'trade_value'=>$input['trade_val'][$i],
             'p_id'=>'PP'.$b,
         ]); //->where('q_id','=','$input["q_id"][$i]')
-        DB::table('trade_com')->where('t_id','=','$input["trade_id"]','and')->where('com_id','=','$input["p_com_id"][$i]','and')->update([
+        DB::table('trade_com')->where('t_id','=',$input['trade_id'],'and')->where('com_id','=',$input['p_com_id'][$i],'and')->update([
             'com_id'=> $input["com_id"][$i],
             'q_id'=>$input['q_id'][$i],
             'weight'=>$input['a_weight'][$i],
@@ -135,7 +135,7 @@ class Trader_applyController extends Controller
             'trade_value'=>$input['trade_val'][$i],
         ]);
     }   
-    dd(DB::getQueryLog());
+    // dd(DB::getQueryLog());
         // return redirect('print-permit/PP'.$b)->with('alert',"Trade processed permit no.-PP".$b." Sucessfully");
     }
 
@@ -172,6 +172,16 @@ class Trader_applyController extends Controller
                 $data['dt'] = explode(' ', $data['dat']->valid_to);
                 $data['df'] = explode(' ', $data['dat']->valid_from);
                 $data['type'] = 'Primary';
+                $data['a_weight'] = '';
+                $data['com_name'] = '';
+                $data['value'] = 0;
+                $data['qty_name'] = '';
+                foreach($data['dat']->mp as $mp){
+                    $data['a_weight'] .= ','.$mp->a_weight;
+                    $data['com_name'] .= ','.$mp->com_name;
+                    $data['value'] += $mp->trade_value;
+                    $data['qty_name'] .= ','.$mp->qty_name;
+                }
             }
         }
         elseif ($id[0] == 'S'){
@@ -184,15 +194,35 @@ class Trader_applyController extends Controller
             $data['dt'] = explode(' ', $data['dat']->valid_to);
             $data['df'] = explode(' ', $data['dat']->from_date);
             $data['type'] = 'Secondary';
+            $data['a_weight'] = '';
+            $data['com_name'] = '';
+            $data['value'] = 0;
+            $data['qty_name'] = '';
+            foreach($data['dat']->mp as $mp){
+                $data['a_weight'] .= ','.$mp->a_weight;
+                $data['com_name'] .= ','.$mp->com_name;
+                $data['value'] += $mp->trade_value;
+                $data['qty_name'] .= ','.$mp->qty_name;
+            }
         }
         elseif ($id[0] == 'A'){
-            $data['dat'] = $trade->aqua1(substr($id, 1))[0];
+            $data['dat'] = $trade->aqua1(substr($id, 1));
             // var_dump($data['dat']);
             $data['dat']->mobile = $data['dat']->phone;
             $data['dat']->a_weight = $data['dat']->qte;
             $data['dat']->veh_detail = $data['dat']->veh_no;
             $data['dat']->valid_from = $data['dat']->created;
             $data['type'] = 'Aqua Export';
+            $data['a_weight'] = '';
+            $data['com_name'] = '';
+            $data['value'] = 0;
+            $data['qty_name'] = '';
+            foreach($data['dat']->mp as $mp){
+                $data['a_weight'] .= ','.$mp->a_weight;
+                $data['com_name'] .= ','.$mp->com_name;
+                $data['value'] += $mp->trade_value;
+                $data['qty_name'] .= ','.$mp->qty_name;
+            }
         }
         elseif ($id[0] == 'R'){
             $data['dat'] = $trade->retail_print(substr($id, 1))[0];
@@ -200,6 +230,16 @@ class Trader_applyController extends Controller
             $data['dat']->a_weight = $data['dat']->a_qty;
             $data['dat']->value = $data['dat']->trade_value;
             $data['type'] = 'Retail';
+            $data['a_weight'] = '';
+            $data['com_name'] = '';
+            $data['value'] = 0;
+            $data['qty_name'] = '';
+            foreach($data['dat']->mp as $mp){
+                $data['a_weight'] .= ','.$mp->a_weight;
+                $data['com_name'] .= ','.$mp->com_name;
+                $data['value'] += $mp->trade_value;
+                $data['qty_name'] .= ','.$mp->qty_name;
+            }
         }
         return view('secondary-permit',$data);
     }
@@ -387,8 +427,8 @@ class Trader_applyController extends Controller
     }
 
     public function aqua_export(Request $request){ 
-        $trade = new tradelist_model();
-        $trade->ae_update($request);
+        // $trade = new tradelist_model();
+        // $trade->ae_update($request);
         $permit = new premit_model();
         $id = $permit->ae_update($request);
         return redirect('print-permit/A'.$id)->with('alert','Aqua Export Permit Created.Premit No. A'.$id);

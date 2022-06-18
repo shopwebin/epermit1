@@ -153,20 +153,28 @@ class tradelist_model extends Model
     }
 
     public function ae_update($request){
+        DB::enableQueryLog();
         return DB::update('update trade set ad1 = ?,ad2 = ?  where id = ?', [$request->input('ad1'),$request->input('ad2'),$request->input('id')]);
+        dd(DB::getQueryLog());
     }
 
     public static function show(){
-        // DB::enableQueryLog();
         $dat = DB::select('SELECT `trade`.*,`amc`.`name` as `amc` FROM `trade` JOIN `amc` on `amc`.`id` = `trade`.`amc_id` Order By trade.id DESC');
-        $i=0;        
+        $i=0;
         foreach($dat as $d){
             $id = $d->id;
             $dat[$i]->sec = DB::table('spermit')->where('t_id',$id)->where('c_status',1)->get('id')->all();
             $dat[$i]->trade_com = DB::select('select `trade_com`.*,`commodity`.`com_name` as `cty`,`quantity`.`qty_name` as `qty` from `trade_com` inner join `commodity` on `commodity`.`com_id` = `trade_com`.`com_id` inner join `quantity` on `quantity`.`id` = `trade_com`.`q_id` where `t_id` = ?',[$d->id]);
+            foreach($dat[$i]->trade_com as $tc){
+                if($tc->trade_type == 'Sales'){
+                    $dat[$i]->trade_type = $tc->trade_type;
+                }
+                if($tc->a_weight > 0){
+                    $dat[$i]->a_weight = 1;
+                }
+            }
             $i++;
         }
-        // dd(DB::getQueryLog());
         return $dat;
     }
 

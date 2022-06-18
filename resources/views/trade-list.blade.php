@@ -33,40 +33,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($dat as $td)
-                        @php
-                            /* $td->cty = '';
-                            $td->weight = 0;
-                            $td->a_weight = 0;
-                            $td->trade_value = 0;
-                            $cq=[];
-                            $acq=[];
-                            $q=[];
-                            $cty = [''];
-                            foreach($td->trade_com as $tc){
-                                if(!in_array($tc->cty,$cty)){
-                                    $cty[] = $tc->cty;
-                                }
-                                // $td->cty .= ','.$tc->cty;
-                                $td->trade_value+=$tc->trade_value;
-                                if(!isset($q[$tc->q_id])){
-                                    $q[$tc->q_id]=$cq[$tc->q_id]=$acq[$tc->q_id] = 0;
-                                }
-                                $acq[$tc->q_id]+=$tc->a_weight;
-                                $cq[$tc->q_id]+=$tc->weight;
-                                $q[$tc->q_id]=$tc->qty;
-                            }
-                            $td->weight='';
-                            $td->a_weight='';
-                            foreach($q as $key=>$q1){
-                                $td->weight .= ",".$cq[$key].$q1;
-                                $td->a_weight .= ",".$acq[$key].$q1;
-                            }                            
-                            $td->cty = join(",",$cty);
-                            $td->cty = substr($td->cty,1);
-                            $td->weight = substr($td->weight,1);
-                            $td->a_weight = substr($td->a_weight,1);*/
-                            @endphp
+                        @foreach($dat as $td)                        
                             @foreach($td->trade_com as $key => $tc)
                         <tr>
                             @if($key == 0)
@@ -179,6 +146,38 @@
 </script>
 </body>
 </html>
-                            <!-- {{-- $td->cty }} <td>{{ $td->weight }} {{--$td->qty--}}</td>
-                            <td>{{ $td->a_weight }} {{--$td->qty--}}</td>
-                            <td>Rs {{ $td->trade_value --}}</td> -->
+<!-- {{-- $td->cty }} <td>{{ $td->weight }} {{--$td->qty--}}</td>
+    <td>{{ $td->a_weight }} {{--$td->qty--}}</td>
+    <td>Rs {{ $td->trade_value --}}</td> 
+     $td->cty = '';
+    $td->weight = 0;
+    $td->a_weight = 0;
+    $td->trade_value = 0;
+    $cq=[];
+    $acq=[];
+    $q=[];
+    $cty = [''];
+    foreach($td->trade_com as $tc){
+        if(!in_array($tc->cty,$cty)){
+            $cty[] = $tc->cty;
+        }
+        // $td->cty .= ','.$tc->cty;
+        $td->trade_value+=$tc->trade_value;
+        if(!isset($q[$tc->q_id])){
+            $q[$tc->q_id]=$cq[$tc->q_id]=$acq[$tc->q_id] = 0;
+        }
+        $acq[$tc->q_id]+=$tc->a_weight;
+        $cq[$tc->q_id]+=$tc->weight;
+        $q[$tc->q_id]=$tc->qty;
+    }
+    $td->weight='';
+    $td->a_weight='';
+    foreach($q as $key=>$q1){
+        $td->weight .= ",".$cq[$key].$q1;
+        $td->a_weight .= ",".$acq[$key].$q1;
+    }                            
+    $td->cty = join(",",$cty);
+    $td->cty = substr($td->cty,1);
+    $td->weight = substr($td->weight,1);
+    $td->a_weight = substr($td->a_weight,1);
+-->

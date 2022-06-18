@@ -12,8 +12,7 @@
                     <btn onclick="" title="History"><i class="priya-history"></i></btn>
                 </div>
             </h5>
-                @if(isset($dat[0]->qty))    @else
-                @php $dat[0]->qty = 0;@endphp   @endif
+                {{-- @if(isset($dat[0]->qty))    @else   @php $dat[0]->qty = 0;@endphp   @endif --}}
             <div class="card-body">
                 <!--div class="form-group">
                     <label>Type of Permit <span class="text-danger">*</span></label>
@@ -64,14 +63,14 @@
                             });
                             $(document).ready(function() {
                                 $(".a_weight").change(function() {
-                                    var c = {{$dat[0]->com_id}};
-                                    var q = {{$dat[0]->q_id}};
+                                    var c = {{--$dat[0]->com_id}};
+                                    var q = {{$dat[0]->q_id--}};
                                     var w = $('.a_weight').val();
-                                    $('.bal_qty').val({{$dat[0]->qty+$dat[0]->a_weight}}-w);
-                                    if(w > {{ ($dat[0]->a_weight+$dat[0]->qty) }}){
+                                    $('.bal_qty').val({{-- $dat[0]->qty+$dat[0]->a_weight --}}-w);
+                                    if(w > {{-- ($dat[0]->a_weight+$dat[0]->qty) --}}){
                                                 alert("Kindly enter value below or equal available quantity");
                                                 $('.a_weight').val("{{ $dat[0]->a_weight }}");
-                                                $('.bal_qty').val({{$dat[0]->qty}});
+                                                $('.bal_qty').val({{-- $dat[0]->qty --}});
                                             } else {
                                     $.ajax({
                                         type: 'POST',
@@ -178,18 +177,6 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label> Commodity <span class="text-danger">*</span></label>
-                                <select class="form-control pri-form commodity" name="com_id" required>
-                                @if($dat[0] != '')
-                                    <option value="{{ $dat[0]->com_id }}">{{ $dat[0]->com_name }}</option>
-                                @else                                
-                                    <option>Select</option>
-                                @endif 
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
                                 <label>State <span class="text-danger">*</span></label>
                                 <select class="form-control pri-form state" name="state_id" required>
                                     <option>Select</option>
@@ -227,21 +214,33 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label> Quantity(Balance Quantity {{ ($dat[0]->a_weight+$dat[0]->qty) }}@isset($dat[0]->qty_name) {{ $dat[0]->qty_name }} @endisset ) <span class="text-danger">*</span></label>
-                                <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight" class="form-control pri-form a_weight" required>
-                                <input type="hidden" name="bal_qty" class="bal_qty" value="{{$dat[0]->qty}}">
+                                <label> Commodity <span class="text-danger">*</span></label>
+                                <select class="form-control pri-form commodity" name="com_id" required>
+                                @if($dat[0] != '')
+                                    <option value="{{-- $dat[0]->com_id --}}">{{-- $dat[0]->com_name --}}</option>
+                                @else                                
+                                    <option>Select</option>
+                                @endif 
+                                </select>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label>Quantity Details <span class="text-danger">*</span></label>
-                                <input type="" name="q_details" class="form-control pri-form q_details" @isset($dat[0]->q_details) value="{{$dat[0]->q_details}}" @endisset required>
+                                <label> Quantity(Balance Quantity {{-- ($dat[0]->a_weight+$dat[0]->qty) --}}@isset($dat[0]->qty_name) {{ $dat[0]->qty_name }} @endisset ) <span class="text-danger">*</span></label>
+                                <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight" class="form-control pri-form a_weight" required>
+                                <input type="hidden" name="bal_qty" class="bal_qty" value="{{-- $dat[0]->qty --}}">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
                                 <input type="" name="value" class="trade_val form-control pri-form" @isset($dat[0]->value) value="{{$dat[0]->value}}" @endisset required>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Quantity Details <span class="text-danger">*</span></label>
+                                <input type="" name="q_details" class="form-control pri-form q_details" @isset($dat[0]->q_details) value="{{$dat[0]->q_details}}" @endisset required>
                             </div>
                         </div>
                         <div class="col-md-4">

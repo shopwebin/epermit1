@@ -67,7 +67,7 @@
                         </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label for="">Commodity<span class="text-danger">*</span></label>
+                                <label for="">Units<span class="text-danger">*</span></label>
                                 <input type="text" class="form-control pri-form" value="{{ $tc->qty_name }}" readonly>
                             </div>
                         </div>
@@ -101,12 +101,26 @@
                 </form>
                 <form action="{{url('update_trade')}}" method="post">
                 @csrf
-<script>
-    function addcom(id){
-        $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
-        $('.add-new').attr('onclick','addcom('+(id+1)+')');
-    };
-</script>
+                <script>
+                    function addcom(id){
+                        if(id < {{count($view[0]->tc)}}){
+                        $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
+                        $('.pp').attr('onclick','addcom('+(id+1)+')');
+                    }}
+                    function addcom1(id) {
+                        if(id < {{count($view[0]->tc)}}){
+                        $('.repeat-div1').append("<div class = 'list  col-md-12 aqua"+id+"'>"+$('.repeat-div1').find('.aqua').html()+"</div>");
+                        $('.aqu').attr('onclick','addcom1('+(id+1)+')');                        
+                    }
+                    }
+                </script>
+                <style>
+                    .repeat-div1 {
+                        border: 1px dashed #0005;
+                        position: relative;
+                        margin: 12px 0 20px;
+                    }
+                </style>
                 <div class="row processing-div box" @if(empty($dat)) style="display: none;" @endif>
                     <div class="col-12 no-gap">
                         <div class="row bordered bg-color1-1">
@@ -144,13 +158,7 @@
                                     $('.mfee').val((w * result.amt*{{$mfee[0]->percent}})/100);
                                 });
                             });
-                        });
-                        /*$(document).ready(function() {
-                            $(".trade_value").change(function() {
-                                var w = $('.trade_value').val();
-                                $('.mfee').val(w*{{$mfee[0]->percent}}/100);
-                            });
-                        });*/         
+                        });        
                         $(document).ready(function() {      
                             $(".fd").change(function() {
                                 var w = $(".fd").val();
@@ -189,7 +197,12 @@
                                 a.find('.weight1').val({{ $tc->a_weight }});
                             }
                             @endforeach
-                            /*
+                        /*$(document).ready(function() {
+                            $(".trade_value").change(function() {
+                                var w = $('.trade_value').val();
+                                $('.mfee').val(w*{{$mfee[0]->percent}}/100);
+                            });
+                            });
                                     var w = @if(isset($dat)){{ $dat->id }} @else {{$view[0]->id}} @endif;
                                     if((c != '') && (q != '') ){
                                     $.ajax({
@@ -202,6 +215,18 @@
                                         }
                                     });
                                     }*/
+                        }
+                        function com_val_2(a){
+                            a=a.parent().parent();
+                            var c = a.find("#p_com_id").val();
+                            var q = a.find(".q_id").val();
+                            @foreach($view[0]->tc as $key=>$tc)
+                                if({{$tc->com_id}} == c){
+                                    a.find('.qty').val({{ $tc->weight }});
+                                    a.find('.a_qty').val({{ $tc->a_weight }});
+                                    a.find('.a_qty').attr('data-val',{{ $tc->a_weight }});
+                                }
+                            @endforeach
                         }
                     </script>
                     <div class="ordered-list col-12 repeat-div">
@@ -265,7 +290,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="add-new" onclick="addcom(1)"><i class="priya-plus"></i></div>
+                        <div class="add-new pp" onclick="addcom(1)"><i class="priya-plus"></i></div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
@@ -346,29 +371,73 @@
                 <form action="aqua_export" method="post">
                     @csrf
                     <div class="row aqua-export-div box" style="display: none;">
-                        <!-- <div class="col-md-12">
-                                <h6>Aqua Export</h6>
-                            </div> -->
+                    <!-- <div class="col-md-12">
+                    <h6>Aqua Export</h6>
+                    </div> -->
                         <div class="col-12 no-gap">
                             <div class="row bordered bg-color1-1">
                                 <div class="col-md-8">
                                     <dl>
                                         <dt>Address</dt>
                                         <input type="hidden" name="id" value="{{ $view[0]->id }}">
-                                        <dd>@if(isset($view[0]->ad1)){{$view[0]->ad1}}@else<input type="text" name="ad1" placeholder="Enter Address" value="{{$view[0]->ad1}}">@endif
-                                            ,@if(isset($view[0]->ad2)){{$view[0]->ad2}}@else<input type="text" name="ad2" placeholder="Enter Address" value="{{$view[0]->ad2}}">@endif</dd>
+                                        <dd>147,m.g.road</dd>
+                                        <!-- dd>@if(isset($view[0]->ad1)){{$view[0]->ad1}}@else<input type="text" name="ad1" placeholder="Enter Address" value="{{$view[0]->ad1}}">@endif
+                                            ,@if(isset($view[0]->ad2)){{$view[0]->ad2}}@else<input type="text" name="ad2" placeholder="Enter Address" value="{{$view[0]->ad2}}">@endif</dd -->
                                     </dl>
                                 </div>
                                 <div class="col-md-4">
-                                    <dl>
+                                <dl>
                                         <dt>Quantity</dt>
                                         <dd class="aqty">{{ $view[0]->a_weight }}</dd>
-                                    </dl>
+                                        </dl>
                                 </div>
-                            </div>
+                                </div>
                         </div>
                         <div class="col-md-12">
-                            <h5 class="mt-3">Trade Details</h5>
+                        <h5 class="mt-3">Trade Details</h5>
+                        </div>
+                        <div class="ordered-list col-12 repeat-div1">
+                        <div class="list aqua">
+                        <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Commodity <span class="text-danger">*</span></label>
+                                <select name="c_id[]" id="p_com_id" class="form-control" onchange="com_val_2($(this).parent())">
+                                    <option value="">Select</option>
+                                    @foreach( $view[0]->tc as $tc )
+                                        <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
+                                    @endforeach
+                                </select>
+                                {{-- @foreach($commodity as $com) @if($com->com_id == $view[0]->commodity_id)
+                                    <input type="" name="c_id" value=" $view[0]->tc[0]->com_name " class="form-control pri-form" readonly>
+                                    @endif @endforeach --}}
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                            <label>Purchased Quantity <span class="text-danger">*</span></label>
+                            <input type="text" name="q" class="form-control pri-form" value="{{ $tc->qty_name }}" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Purchased Quantity <span class="text-danger">*</span></label>
+                                <input type="number" name="qty[]" value="{{ $view[0]->weight }}" class="qty form-control pri-form" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Balance Quantity <span class="text-danger">*</span></label>
+                                <input type="number" name="a_qty[]" data-val="{{ $view[0]->a_weight }}" value="{{ $view[0]->a_weight }}" class="a_qty form-control pri-form" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Quantity to Export <span class="text-danger">*</span></label>
+                                <input type="number" name="qte[]" class="qte form-control pri-form" onchange="qte($(this).parent())">
+                            </div>
+                        </div></div></div>
+                        <div class="add-new aqu" onclick="addcom1(1)"><i class="priya-plus"></i></div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
@@ -378,50 +447,27 @@
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <label>Commodity <span class="text-danger">*</span></label>
-                                @foreach($commodity as $com) @if($com->com_id == $view[0]->commodity_id)
-                                    <input type="" name="c_id" value="{{ $view[0]->tc[0]->com_name }}" class="form-control pri-form" readonly>
-                                @endif @endforeach
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Purchased Quantity <span class="text-danger">*</span></label>
-                                <input type="number" name="qty" value="{{ $view[0]->weight }}" class="qty form-control pri-form" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Balance Quantity <span class="text-danger">*</span></label>
-                                <input type="number" name="a_qty" value="{{ $view[0]->a_weight }}" class="a_qty form-control pri-form" readonly>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label>Quantity to Export <span class="text-danger">*</span></label>
-                                <input type="number" name="qte" class="qte form-control pri-form">
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
                                 <label>Sale Value <span class="text-danger">*</span></label>
                                 <input type="" name="sale_value" class="sale_value form-control pri-form">
                             </div>
                         </div>
                         <script>
-                            $('.qte').change(function() {
-                                var h = parseInt($('.aqty').html());
-                                var f = $('.qte').val();
-                                $('.a_qty').val(h - f);
+                            // $('.qte').change(function(a) {
+                            function qte(a){
+                                // console.log(a.parent().parent().parent().find('.a_qty').val());
+                                a= a.parent().parent().parent();
+                                var h = parseInt(a.find('.a_qty').data('val'));
+                                var f = a.find('.qte').val();
+                                a.find('.a_qty').val(h - f);
                                 // alert(h);
                                 if ((f - h) > 0) {
                                     alert("Kindly enter number below Avaliable Quantity.");
-                                    $('.qte').val(h);
-                                    $('.a_qty').val(0);
+                                    a.find('.qte').val(h);
+                                    a.find('.a_qty').val(0);
                                 }
-                            });
+                            }
                             $('.sale_value').change(function() {
-                                $('.m_fee').val($('.sale_value').val() / 50);
+                                $('.m_fee').val($('.sale_value').val() * {{$mfee[0]->percent}}/ 100);
                             });
                         </script>
                         <div class="col-md-3">
