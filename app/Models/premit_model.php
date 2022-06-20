@@ -10,30 +10,71 @@ class premit_model extends Model
 {
     use HasFactory;
     public static function add($request){
+        // DB::enableQueryLog(); 
         $id = DB::table('permit')->insertGetId([
             'ad1'=> $request->input('ad1'),
             'ad2' => $request->input('ad2'),
-            'com_id' => $request->input('com_id'),
             'state_id' => $request->input('state_id'),
             'name' => $request->input('name'),
             'dis_id' => $request->input('dis_id'),
             'mdl_id' => $request->input('mdl_id'),
-            'a_weight' => $request->input('a_weight'),
-            'q_details' => $request->input('q_details'),
             'source' => $request->input('source'),
             'destination' => $request->input('destination'),
             'veh_detail' => $request->input('veh_detail'),
             'valid_from' => $request->input('fd').' '.$request->input('ft'),
             'valid_to' => $request->input('td').' '.$request->input('tt'),
             'mobile'    => $request->input('mobile'),
-            'value'    => $request->input('value'),
             'invoice'    => $request->input('invoice'),
             'trader_id' => '4',
         ]);
         DB::select('update `trade` set `permit_id` = '.$id.', `a_weight` = `a_weight` - '.$request->input('a_weight').', `p_status` = `p_status` + 2  where `id` = '.$request->input('t_id'));
-        /*$query = DB::getQueryLog();
-        var_dump($query);*/
         return $id;
+        /*$query = DB::getQueryLog();
+            var_dump($query);*/
+            /*'com_id' => $request->input('com_id'),
+            'value'    => $request->input('value'),
+            'a_weight' => $request->input('a_weight'),
+            'q_details' => $request->input('q_details'),*/
+    }
+    
+    public function ae_update($request){
+        $q = DB::table('aepermit')->insertGetId([
+            'name' => $request->input('name'),
+            'invoice' => $request->input('invoice'),
+            'ad1' => $request->input('add1'),
+            'ad2' => $request->input('add2'),
+            't_id' => $request->input('id'),
+            'state_id' => $request->input('state'),
+            'dis_id' => $request->input('district'),
+            'mdl_id' => $request->input('mandal'),
+            'amc_id' => $request->input('amc_id'),
+            'veh_no' => $request->input('veh_no'),
+            'phone' => $request->input('phone')
+        ]);
+        for($i=0;$i<count($request->input('qte'));$i++){
+            $a1 = DB::select('Select `id` from `quantity` where `qty_name` = "'.$request->input('q').'"')[0]->id;
+            // var_dump($a1);
+            $a = DB::table('multi_permit')->insertGetId([
+                'com_id'=>$request->input('c_id')[$i],
+                'weight'=>$request->input('a_qty')[$i],
+                'a_weight'=>$request->input('qte')[$i],
+                'trade_value'=>$request->input('sale_value'),
+                'q_id'=> $a1,
+                'p_id'=>'A'.$q
+            ]);
+            $b = DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('qte')[$i],$request->input('id'),$request->input('c_id')[$i]]);
+        }
+        /* 'com_name' => $request->input('c_id'),
+            'value' => $request->input('sale_value'),
+            'qte' => $request->input('qte'),
+            var_dump($request->input('c_id'));
+            DB::enableQueryLog();
+            dd(DB::getQueryLog());
+            $b = DB::table('trade_com')->where('t_id','=',$request->input('id'),'and')->where('com_id','=',$request->input('c_id')[$i])->update([
+                'a_weight'=>'`a_weight` - '.$request->input('qte')[$i]
+            ]);
+            DB::update('update trade set a_weight = ? where id = ?', [,]);*/
+        return $q;
     }
 
     public function secondary($id)
@@ -122,46 +163,6 @@ class premit_model extends Model
 
     public function retail_print($id){
         $q = DB::select('select trader_apply.lic_no,retail.*,trader_apply.tname,trader_apply.address,trader_apply.firmname,trader_apply.firmaddress,quantity.qty_name from retail join trade on trade.id = retail.trade_id join trader_apply on trade.trader_id = trader_apply.id join commodity on commodity.com_id = trade.commodity_id join  quantity on quantity.id = commodity.q_id where retail.id = ?', [$id]);
-        return $q;
-    }
-    
-    public function ae_update($request){
-        $q = DB::table('aepermit')->insertGetId([
-            'name' => $request->input('name'),
-            'invoice' => $request->input('invoice'),
-            'ad1' => $request->input('add1'),
-            'ad2' => $request->input('add2'),
-            't_id' => $request->input('id'),
-            'state_id' => $request->input('state'),
-            'dis_id' => $request->input('district'),
-            'mdl_id' => $request->input('mandal'),
-            'amc_id' => $request->input('amc_id'),
-            'veh_no' => $request->input('veh_no'),
-            'phone' => $request->input('phone')
-        ]);
-        /* 'com_name' => $request->input('c_id'),
-        'value' => $request->input('sale_value'),
-        'qte' => $request->input('qte'),
-        var_dump($request->input('c_id'));*/
-        // DB::enableQueryLog();
-        // dd(DB::getQueryLog());
-        for($i=0;$i<count($request->input('qte'));$i++){
-            $a1 = DB::select('Select `id` from `quantity` where `qty_name` = "'.$request->input('q').'"')[0]->id;
-            // var_dump($a1);
-            $a = DB::table('multi_permit')->insertGetId([
-                'com_id'=>$request->input('c_id')[$i],
-                'weight'=>$request->input('a_qty')[$i],
-                'a_weight'=>$request->input('qte')[$i],
-                'trade_value'=>$request->input('sale_value'),
-                'q_id'=> $a1,
-                'p_id'=>'A'.$q
-            ]);
-            // $b = DB::table('trade_com')->where('t_id','=',$request->input('id'),'and')->where('com_id','=',$request->input('c_id')[$i])->update([
-            //     'a_weight'=>'`a_weight` - '.$request->input('qte')[$i]
-            // ]);
-            $b = DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('qte')[$i],$request->input('id'),$request->input('c_id')[$i]]);
-        }
-        // DB::update('update trade set a_weight = ? where id = ?', [,]);
         return $q;
     }
 

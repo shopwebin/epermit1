@@ -98,15 +98,17 @@ class Trader_applyController extends Controller
     {
         $input = $request->all();
         $input['trade_id'] = substr($input['trade_id'],1);
-        // $a = DB::update('update trade set ad1 = ?,ad2 = ? where id = ?', [$input['ad1'],$input['ad2'],$input['trade_id']]);
-        // $a = DB::update('update trade set ad1 = ?,ad2 = ?, commodity_id = ?, trade_value=?,m_fee=?,a_weight=? where id = ?', [$input['ad1'],$input['ad2'],$input['com_id'],$input['trade_val'],$input['mfee'],$input['trade_id'],$input['a_weight']]);
+        /* $a = DB::update('update trade set ad1 = ?,ad2 = ? where id = ?', [$input['ad1'],$input['ad2'],$input['trade_id']]);
+            $a = DB::update('update trade set ad1 = ?,ad2 = ?, commodity_id = ?, trade_value=?,m_fee=?,a_weight=? where id = ?', [$input['ad1'],$input['ad2'],$input['com_id'],$input['trade_val'],$input['mfee'],$input['trade_id'],$input['a_weight']]);
+            'c_id'=>$input['com_id'],
+            'q_id'=>$input['q_id'],
+            'b_qty'=>$input['b_qty'],
+            'a_qty'=>$input['a_weight'],
+            'mfee'=>$input['mfee'],
+            'trade_val'=>$input['trade_val'],
+            ->where('q_id','=','$input["q_id"][$i]')
+            DB::enableQueryLog();*/
         $b = DB::table('p_permit')->insertGetId([
-            /* 'c_id'=>$input['com_id'],
-                'q_id'=>$input['q_id'],
-                'b_qty'=>$input['b_qty'],
-                'a_qty'=>$input['a_weight'],
-                'mfee'=>$input['mfee'],
-                'trade_val'=>$input['trade_val'],*/
             't_id'=>$input['trade_id'],
             'ad1'=>$input['ad1'],
             'ad2'=>$input['ad2'],
@@ -116,7 +118,6 @@ class Trader_applyController extends Controller
             'to_date'=>$input['td']." ".$input['ft'],
             'invoice'=>$input['invoice']
         ]);
-        // DB::enableQueryLog();
         for($i=0;$i<count($input['com_id']);$i++){
         $a[] = DB::table('multi_permit')->insertGetId([
             'com_id'=>$input['com_id'][$i],
@@ -126,7 +127,7 @@ class Trader_applyController extends Controller
             // 'mfee'=>$input['mfee'][$i],
             'trade_value'=>$input['trade_val'][$i],
             'p_id'=>'PP'.$b,
-        ]); //->where('q_id','=','$input["q_id"][$i]')
+        ]);
         DB::table('trade_com')->where('t_id','=',$input['trade_id'],'and')->where('com_id','=',$input['p_com_id'][$i],'and')->update([
             'com_id'=> $input["com_id"][$i],
             'q_id'=>$input['q_id'][$i],
