@@ -27,16 +27,16 @@ class premit_model extends Model
             'invoice'    => $request->input('invoice'),
             'trader_id' => '4',
         ]);
-        for($i=0;$i<count($request->input('qte'));$i++){
-            // $a1 = DB::select('Select `id` from `quantity` where `qty_name` = "'.$request->input('q').'"')[0]->id;
-            // var_dump($a1);
+        // $a1 = DB::select('Select `id` from `quantity` where `qty_name` = "'.$request->input('q').'"')[0]->id;
+        // var_dump($a1);
+        for($i=0;$i<count($request->input('bal_qty'));$i++){
             $a = DB::table('multi_permit')->insertGetId([
-                'com_id'=>$request->input('c_id')[$i],
-                'weight'=>$request->input('a_qty')[$i],
-                'a_weight'=>$request->input('qte')[$i],
-                'trade_value'=>$request->input('sale_value'),
-                'q_id'=> $a1,
-                'p_id'=>'A'.$q
+                'com_id'=>$request->input('com_id')[$i],
+                'weight'=>$request->input('bal_qty')[$i],
+                'a_weight'=>$request->input('a_weight')[$i],
+                'trade_value'=>$request->input('value')[$i],
+                'q_id'=> $request->input('q_id')[$i],
+                'p_id'=>'P'.$id
             ]);
             $b = DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('qte')[$i],$request->input('id'),$request->input('c_id')[$i]]);
         }

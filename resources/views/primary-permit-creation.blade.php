@@ -124,6 +124,7 @@
                                 @foreach($dat[0]->tc as $tc)
                                     if({{$tc->com_id}} == a.find('.commodity').val()){
                                         a.find('.bqty').html("Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset )");
+                                        a.find('.q_id').html("{{ $tc->q_id }}");
                                     }
                                 @endforeach
                             }
@@ -242,7 +243,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label> Commodity <span class="text-danger">*</span></label>
-                                <select class="form-control pri-form commodity" name="com_id" onchange="com_ch_1($(this).parent())">
+                                <select class="form-control pri-form commodity" name="com_id[]" onchange="com_ch_1($(this).parent())">
                                 @if($dat[0] != '')
                                 @foreach($dat[0]->tc as $tc)
                                     <option value="{{ $tc->com_id }}">{{ $tc->com_name }} in {{$tc->qty_name}}</option>
@@ -256,15 +257,15 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="bqty"> Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class="text-danger">*</span></label>
-                                <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight" class="form-control pri-form a_weight" onchange="a_weight_ch($(this).parent())" required>
-                                <input type="hidden" name="bal_qty" class="bal_qty" value="{{-- $dat[0]->qty --}}">
-                                <input type="hidden" name="q_id" class="q_id" value="">
+                                <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight[]" class="form-control pri-form a_weight" onchange="a_weight_ch($(this).parent())" required>
+                                <input type="hidden" name="bal_qty[]" class="bal_qty" value="{{-- $dat[0]->qty --}}">
+                                <input type="hidden" name="q_id[]" class="q_id" value="">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
-                                <input type="" name="value" class="trade_val form-control pri-form" @isset($dat[0]->value) value="{{$dat[0]->value}}" @endisset required>
+                                <input type="" name="value[]" class="trade_val form-control pri-form" @isset($dat[0]->value) value="{{$dat[0]->value}}" @endisset required>
                             </div>
                         </div>
                         </div>
