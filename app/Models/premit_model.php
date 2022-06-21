@@ -26,9 +26,8 @@ class premit_model extends Model
             'mobile'    => $request->input('mobile'),
             'invoice'    => $request->input('invoice'),
             'trader_id' => '4',
+            'q_details' => $request->input('q_details'),
         ]);
-        // $a1 = DB::select('Select `id` from `quantity` where `qty_name` = "'.$request->input('q').'"')[0]->id;
-        // var_dump($a1);
         for($i=0;$i<count($request->input('bal_qty'));$i++){
             $a = DB::table('multi_permit')->insertGetId([
                 'com_id'=>$request->input('com_id')[$i],
@@ -38,16 +37,17 @@ class premit_model extends Model
                 'q_id'=> $request->input('q_id')[$i],
                 'p_id'=>'P'.$id
             ]);
-            $b = DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('qte')[$i],$request->input('id'),$request->input('c_id')[$i]]);
+            $b = DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('a_weight')[$i],$request->input('id'),$request->input('com_id')[$i]]);
         }
-        DB::select('update `trade` set `permit_id` = '.$id.', `a_weight` = `a_weight` - '.$request->input('a_weight').', `p_status` = `p_status` + 2  where `id` = '.$request->input('t_id'));
+        DB::select('update `trade` set `permit_id` = '.$id.', `p_status` = `p_status` + 2  where `id` = '.$request->input('t_id'));
         return $id;
         /*$query = DB::getQueryLog();
-            var_dump($query);*/
-            /*'com_id' => $request->input('com_id'),
+            var_dump($query)
+            $a1 = DB::select('Select `id` from `quantity` where `qty_name` = "'.$request->input('q').'"')[0]->id;
+            var_dump($a1);
+            'com_id' => $request->input('com_id'),
             'value'    => $request->input('value'),
-            'a_weight' => $request->input('a_weight'),
-            'q_details' => $request->input('q_details'),*/
+            'a_weight' => $request->input('a_weight'),*/
     }
     
     public function ae_update($request){
@@ -147,14 +147,16 @@ class premit_model extends Model
         // $q = DB::table('permit')->join('commodity','permit.com_id','=','commodity.com_id')->join('trade','trade.permit_id','=','permit.id')->where('permit.id','=',$id)->get('permit.*,commodity.*,trade.a_weight as qty');
         // DB::enableQueryLog();
         // dd(DB::getQueryLog());
-        $q = DB::select('select permit.*,commodity.*,`trade`.`a_weight` as `qty`,`trade`.`id` as `trade_id` from `permit` inner join `commodity` on `permit`.`com_id` = `commodity`.`com_id` inner join `trade` on `trade`.`permit_id` = `permit`.`id` where `permit`.`id` = ?', [$id]);
+        $q = DB::select('select permit.*,`trade`.`a_weight` as `qty`,`trade`.`id` as `trade_id` from `permit` inner join `trade` on `trade`.`permit_id` = `permit`.`id` where `permit`.`id` = ?', [$id]);
+        $q[0]->tc = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
         return $q;
         /*->join('districts','districts.id','=','permit.dis_id')
         ->join('mandals','mandals.id','=','permit.mdl_id')*/
     }
     public static function primary1($id){
-        $q = DB::select('select commodity.*,permit.*,quantity.qty_name,trader_apply.* from permit inner join commodity on permit.com_id = commodity.com_id inner join quantity on commodity.q_id = quantity.id inner join trader_apply on trader_apply.id = permit.trader_id where permit.id = ?', [$id]);
-        // var_dump($q);
+        $q = DB::select('select permit.*,trader_apply.* from permit  inner join trader_apply on trader_apply.id = permit.trader_id where permit.id = ?', [$id])[0];
+        $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
+        // var_dump($id);
         return $q;
     }
 

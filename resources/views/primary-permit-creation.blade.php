@@ -124,7 +124,7 @@
                                 @foreach($dat[0]->tc as $tc)
                                     if({{$tc->com_id}} == a.find('.commodity').val()){
                                         a.find('.bqty').html("Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset )");
-                                        a.find('.q_id').html("{{ $tc->q_id }}");
+                                        a.find('.q_id').val("{{ $tc->q_id }}");
                                     }
                                 @endforeach
                             }
@@ -238,7 +238,7 @@
                     }}
                     </script>
                     <div class="ordered-list col-12 repeat-div">
-                        <div class="list com">
+                        <!--div class="list com">
                             <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
@@ -269,8 +269,47 @@
                             </div>
                         </div>
                         </div>
+                    </div-->
+                    @php if(isset($dat[0]->tc[0]->p_id)){
+                        $i = count($dat[0]->tc);
+                        // echo $dat[0]->tc[0]->p_id;
+                    }   else { $i = 1; }
+                    for($j=0;$j<$i;$j++){
+                        @endphp
+                        <div class="list com">
+                            <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Commodity <span class="text-danger">*</span></label>
+                                <select class="form-control pri-form commodity" name="com_id[]" onchange="com_ch_1($(this).parent())">
+                                @if($dat[0] != '')
+                                @foreach($dat[0]->tc as $tc)
+                                    <option value="{{ $tc->com_id }}" @if($tc->com_id == $dat[0]->tc[$j]->com_id) selected @endif >{{ $tc->com_name }} in {{$tc->qty_name}}</option>
+                                @endforeach
+                                @else                                
+                                    <option>Select</option>
+                                @endif 
+                                </select>
+                            </div>
+                        </div>                        
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="bqty"> Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class="text-danger">*</span></label>
+                                <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight[]" class="form-control pri-form a_weight" onchange="a_weight_ch($(this).parent())" required>
+                                <input type="hidden" name="bal_qty[]" class="bal_qty" value="{{-- $dat[0]->qty --}}">
+                                <input type="hidden" name="q_id[]" class="q_id" value="">
+                            </div>
                         </div>
-                        <div class="add-new pp" onclick="addcom(1)"><i class="priya-plus"></i></div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Trade Value (INR) <span class="text-danger">*</span></label>
+                                <input type="" name="value[]" class="trade_val form-control pri-form" @isset($dat[0]->value) value="{{$dat[0]->value}}" @endisset required>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                     @php } @endphp
+                        @if($i == 1)<div class="add-new pp" onclick="addcom(1)"><i class="priya-plus"></i></div>@endif
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">

@@ -168,7 +168,8 @@ class Trader_applyController extends Controller
                 }
             }
             else{
-                $data['dat'] = $trade->primary1(substr($id, 1))[0];
+                $data['dat'] = $trade->primary1(substr($id, 1));
+                $data['dat']->id = substr($id, 1);
                 // var_dump($data['dat']);
                 $data['dt'] = explode(' ', $data['dat']->valid_to);
                 $data['df'] = explode(' ', $data['dat']->valid_from);
