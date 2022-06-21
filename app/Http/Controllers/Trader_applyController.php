@@ -303,13 +303,13 @@ class Trader_applyController extends Controller
         $data['mandals'] = mandals_model::get_data();
         $data['quantity'] = quantity_model::get_data();
         if ($td[0] == 'T') {
-            $data['dat'] = $trade->new(substr($td, 1));
+            $data['dat'] = $trade->new(substr($td, 1))[0];
             // var_dump($data['dat']);
         }
         if ($td[0] == 'S') {
             $data['dat'] = $trade->secondary(substr($td, 1));
-            $data['dt'] = explode(' ', $data['dat'][0]->to_date);
-            $data['df'] = explode(' ', $data['dat'][0]->from_date);
+            $data['dt'] = explode(' ', $data['dat']->to_date)[0];
+            $data['df'] = explode(' ', $data['dat']->from_date)[0];
             $data['type'] = 'secondary';
         }
         return view('secondary-permit-creation', $data);

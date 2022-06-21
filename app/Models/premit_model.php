@@ -89,14 +89,30 @@ class premit_model extends Model
             DB::update('update trade set a_weight = ? where id = ?', [,]);*/
         return $q;
     }
-
+    public static function primary($id){
+        // $q = DB::table('permit')->join('commodity','permit.com_id','=','commodity.com_id')->join('trade','trade.permit_id','=','permit.id')->where('permit.id','=',$id)->get('permit.*,commodity.*,trade.a_weight as qty');
+        // DB::enableQueryLog();
+        // dd(DB::getQueryLog());
+        $q = DB::select('select permit.*,`trade`.`a_weight` as `qty`,`trade`.`id` as `trade_id` from `permit` inner join `trade` on `trade`.`permit_id` = `permit`.`id` where `permit`.`id` = ?', [$id]);
+        $q[0]->tc = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
+        return $q;
+        /*->join('districts','districts.id','=','permit.dis_id')
+        ->join('mandals','mandals.id','=','permit.mdl_id')*/
+    }
+    public static function primary1($id){
+        $q = DB::select('select permit.*,trader_apply.* from permit  inner join trader_apply on trader_apply.id = permit.trader_id where permit.id = ?', [$id])[0];
+        $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
+        // var_dump($id);
+        return $q;
+    }
     public function secondary($id)
     {
         /*$dat = DB::table('spermit')->join('commodity','com_id','=','c_id')
-        ->join('trade','t_id','=','trade.id')->join('amc','amc.id','=','amc_id')
-        ->where('id',$id)->get('spermit.*,commodity.*,amc.name,trade.weight,trade.a_weight');*/
-        // var_dump($dat);
-        $dat = DB::select('select spermit.*,commodity.*,amc.name as amc,trade.weight,trade.a_weight as aqty,districts.name as dis_name, mandals.name as mdl_name from spermit inner join commodity on commodity.com_id = spermit.c_id inner join trade on spermit.t_id = trade.id inner join amc on amc.id = trade.amc_id join districts on districts.id = spermit.dis_id join mandals on mandals.id = spermit.mdl_id where spermit.id =  ?', [$id]);
+            ->join('trade','t_id','=','trade.id')->join('amc','amc.id','=','amc_id')
+            ->where('id',$id)->get('spermit.*,commodity.*,amc.name,trade.weight,trade.a_weight');*/
+            // var_dump($dat);
+        $dat = DB::select('select spermit.*,commodity.*,amc.name as amc,trade.weight,trade.a_weight as aqty,districts.name as dis_name, mandals.name as mdl_name from spermit inner join commodity on commodity.com_id = spermit.c_id inner join trade on spermit.t_id = trade.id inner join amc on amc.id = trade.amc_id join districts on districts.id = spermit.dis_id join mandals on mandals.id = spermit.mdl_id where spermit.id =  ?', [$id])[0];
+        $dat->tc = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
         return $dat;
     }
 
@@ -142,22 +158,6 @@ class premit_model extends Model
         $quer = DB::select('Select trade.*,amc.name as amc from `trade` join `amc` on `amc`.`id` = `trade`.`amc_id` where `trade`.`id` = '.$id);
         $quer[0]->tc = DB::select('select `trade_com`.*,quantity.qty_name,commodity.* from `trade_com` JOIN quantity on quantity.id = `trade_com`.q_id JOIN commodity on commodity.com_id = `trade_com`.com_id where t_id = "'.$id.'"');
         return $quer;
-    }
-    public static function primary($id){
-        // $q = DB::table('permit')->join('commodity','permit.com_id','=','commodity.com_id')->join('trade','trade.permit_id','=','permit.id')->where('permit.id','=',$id)->get('permit.*,commodity.*,trade.a_weight as qty');
-        // DB::enableQueryLog();
-        // dd(DB::getQueryLog());
-        $q = DB::select('select permit.*,`trade`.`a_weight` as `qty`,`trade`.`id` as `trade_id` from `permit` inner join `trade` on `trade`.`permit_id` = `permit`.`id` where `permit`.`id` = ?', [$id]);
-        $q[0]->tc = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
-        return $q;
-        /*->join('districts','districts.id','=','permit.dis_id')
-        ->join('mandals','mandals.id','=','permit.mdl_id')*/
-    }
-    public static function primary1($id){
-        $q = DB::select('select permit.*,trader_apply.* from permit  inner join trader_apply on trader_apply.id = permit.trader_id where permit.id = ?', [$id])[0];
-        $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
-        // var_dump($id);
-        return $q;
     }
 
     public function print_processing($id){

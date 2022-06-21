@@ -12,8 +12,8 @@
                 </div>
             </h5>
             <div class="card-body">
-                <div class="row">
-                    <!--div class="col-md-3">
+                <!--div class="row">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <label>Type of Permit <span class="text-danger">*</span></label>
                             <div class="custom-control custom-radio custom-control-inline">
@@ -25,30 +25,30 @@
                                 <label class="custom-control-label" for="customRadioInline2">Secondary</label>
                             </div>
                         </div>
-                    </div>-->
+                    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Address <span class="text-danger">*</span></label>
-                            <input type="" name="amc_name" class="form-control pri-form" value="@isset($dat[0]->amc){{$dat[0]->amc}}@endisset" readonly>
+                            <input type="" name="amc_name" class="form-control pri-form" value="@isset($dat->amc){{$dat->amc}}@endisset" readonly>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Purchase Quantity <span class="text-danger">*</span></label>
-                            <input type="" name="weight" class="form-control pri-form" value="@isset($dat[0]->weight){{$dat[0]->weight}}@endisset" readonly>
+                            <input type="" name="weight" class="form-control pri-form" value="@isset($dat->weight){{$dat->weight}}@endisset" readonly>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>Balance Quantity<span class="text-danger">*</span></label>
-                            <input type="" name="a_weight" class="form-control pri-form" value="@if(isset($dat[0]->aqty)){{$dat[0]->aqty + $dat[0]->a_weight}}@else{{$dat[0]->a_weight}}@endif" readonly>
+                            <input type="" name="a_weight" class="form-control pri-form" value="@if(isset($dat->aqty)){{$dat->aqty + $dat->a_weight}}@else{{$dat->a_weight}}@endif" readonly>
                         </div>
                     </div>
-                </div>
+                </div>-->
                 <script>
                     /*$(document).ready(function() {
-                        {{-- @if($dat[0]->c_status)
-                            window.location.href = '{{url("cancel-permit")}}/S{{ $dat[0]->id }}';
+                        {{-- @if($dat->c_status)
+                            window.location.href = '{{url("cancel-permit")}}/S{{ $dat->id }}';
                         @endif --}}
                     });*/
                     $.ajaxSetup({
@@ -61,9 +61,8 @@
                             $.get("{{url('district')}}/" + $(this).val(), function(result) {
                                 var str;
                                 for (var i = 0; i < result.length; i++) {
-                                    str += '<option value="' + result[i].id + '" @isset($dat[0]->dis_id) @if($dat[0]->dis_id == "' + result[i].id + '"){{ "selected" }}@endif @endisset>' + result[i].name + '</option>';
+                                    str += '<option value="' + result[i].id + '" @isset($dat->dis_id) @if($dat->dis_id == "' + result[i].id + '"){{ "selected" }}@endif @endisset>' + result[i].name + '</option>';
                                 }
-                                console.log('str');
                                 $('.district').html(str);
                             });
                         });
@@ -73,7 +72,7 @@
                             $.get("{{url('mandal')}}/" + $(this).val(), function(result) {
                                 var str;
                                 for (var i = 0; i < result.length; i++) {
-                                    str += '<option value="' + result[i].id + '" @isset($dat[0]->mdl_id) @if($dat[0]->mdl_id == "' + result[i].id + '"){{ "selected" }}@endif @endisset>' + result[i].name + '</option>';
+                                    str += '<option value="' + result[i].id + '" @isset($dat->mdl_id) @if($dat->mdl_id == "' + result[i].id + '"){{ "selected" }}@endif @endisset>' + result[i].name + '</option>';
                                 }
                                 $('.mandal').html(str);
                             });
@@ -84,7 +83,7 @@
                             var w = $(".fd").val();
                             var h = $(".td").val();
                             // alert(w);
-                            var strDate = (new Date()).toISOString().split('T')[0];
+                            var strDate = (new Date()).toISOString().split('T');
                             // alert(strDate);
                             if(w < strDate){
                                 alert("old date permit can't be Created");
@@ -99,7 +98,7 @@
                         $(".td").change(function() {
                             var w = $(".fd").val();
                             var h = $(".td").val();
-                            var strDate = (new Date()).toISOString().split('T')[0];
+                            var strDate = (new Date()).toISOString().split('T');
                             // alert(w);
                             // alert(strDate);
                             if((w < strDate)||(w >= h)){
@@ -108,43 +107,43 @@
                             }
                         });
                     });
-                    $(document).ready(function() {
+                    /*$(document).ready(function() {
                         $(".a_weight").change(function() {
                             var w = $('.a_weight').val();
-                            @if(isset($dat[0]->aqty))
-                            if(w > {{ $dat[0]->a_weight + $dat[0]->aqty }}){
-                            @else   if(w > {{ $dat[0]->a_weight }}){    @endif
+                            @if(isset($dat->aqty))
+                            if(w > {{ $dat->a_weight + $dat->aqty }}){
+                            @else   if(w > {{ $dat->a_weight }}0){    @endif
                                 alert("Kindly enter value below or equal available quantity");
-                                $('.a_weight').val("{{ $dat[0]->a_weight }}");
+                                $('.a_weight').val("{{ $dat->a_weight }}");
                             } else {
-                                $('.trade_val').val(w * {{$dat[0]->amt}});
+                                $('.trade_val').val(w * 1{{--$dat->amt--}});
                             }
                         });
+                    });*/
+                    $(document).ready(function() {
+                        $('#cancelbtn').click(function(e){
+                            e.preventDefault();
+                            $('.c_qty1').val($('.c_qty').val());
+                            $('.c_reason1').val($('.c_reason').val());
+                            $('.c_id1').val('P'+$('.id').val());
+                            $('.c_tid1').val($('input[name=t_id]').val());
+                            $('.form2').submit();
+                        });
                     });
-                            $(document).ready(function() {
-                                $('#cancelbtn').click(function(e){
-                                    e.preventDefault();
-                                    $('.c_qty1').val($('.c_qty').val());
-                                    $('.c_reason1').val($('.c_reason').val());
-                                    $('.c_id1').val('P'+$('.id').val());
-                                    $('.c_tid1').val($('input[name=t_id]').val());
-                                    $('.form2').submit();
-                                });
-                            });
-                            $(document).ready(function() {
-                                $('.c_qty').change(function(){
-                                    var a = $('.a_weight').val();
-                                    var c = $('.c_qty').val(); 
-                                    if(c - a >0){
-                                        alert('Kindly enter number less or equal to the Available Quantity');
-                                        $('.c_qty').val(0);
-                                    }
-                                    $('.c_r').css('display','block');
-                                });
-                            });
+                    $(document).ready(function() {
+                        $('.c_qty').change(function(){
+                            var a = $('.a_weight').val();
+                            var c = $('.c_qty').val(); 
+                            if(c - a >0){
+                                alert('Kindly enter number less or equal to the Available Quantity');
+                                $('.c_qty').val(0);
+                            }
+                            $('.c_r').css('display','block');
+                        });
+                    });
                 </script>
                 <h5 class="mt-3">Consignee Details</h5>
-                @if(isset($dat[0]->veh_id))
+                @if(isset($dat->veh_id))
                 <form action="{{url('secondary/permit/edit')}}" method="post">
                 @else
                 <form action="{{url('secondary/permit/add')}}" method="post">
@@ -154,19 +153,19 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Name <span class="text-danger">*</span></label>
-                                <input type="" name="name" class="form-control pri-form" value="@isset($dat[0]->name){{$dat[0]->name}}@endisset">
+                                <input type="" name="name" class="form-control pri-form" value="@isset($dat->name){{$dat->name}}@endisset">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Address Line 1 <span class="text-danger">*</span></label>
-                                <input type="" name="ad1" class="form-control pri-form"  value="@isset($dat){{$dat[0]->ad1}}@endisset">
+                                <input type="" name="ad1" class="form-control pri-form"  value="@isset($dat){{$dat->ad1}}@endisset">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Address Line 2 <span class="text-danger">*</span></label>
-                                <input type="" name="ad2" class="form-control pri-form"  value="@isset($dat){{$dat[0]->ad2}}@endisset">
+                                <input type="" name="ad2" class="form-control pri-form"  value="@isset($dat){{$dat->ad2}}@endisset">
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -175,7 +174,7 @@
                                 <select class="form-control pri-form state" name="stt_id">
                                     <option>Select</option>
                                     @foreach($state as $stt)
-                                    <option value="{{$stt->state_id}}" @if(isset($dat[0]->stt_id)) @if($stt->state_id == $dat[0]->stt_id){{"selected"}}@endif @endif>{{$stt->state_title}}</option>
+                                    <option value="{{$stt->state_id}}" @if(isset($dat->stt_id)) @if($stt->state_id == $dat->stt_id){{"selected"}}@endif @endif>{{$stt->state_title}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -184,8 +183,8 @@
                             <div class="form-group">
                                 <label>District <span class="text-danger">*</span></label>
                                 <select class="form-control pri-form district" name="dis_id">
-                                @if(isset($dat[0]->dis_id))
-                                    <option value="{{$dat[0]->dis_id}}">{{$dat[0]->dis_name}}</option>
+                                @if(isset($dat->dis_id))
+                                    <option value="{{$dat->dis_id}}">{{$dat->dis_name}}</option>
                                 @else
                                     <option>Select</option>
                                 @endif
@@ -196,8 +195,8 @@
                             <div class="form-group">
                                 <label>Mandal <span class="text-danger">*</span></label>
                                 <select class="form-control pri-form mandal" name="mdl_id">
-                                @if(isset($dat[0]->mdl_id))
-                                <option value="{{$dat[0]->mdl_id}}">{{$dat[0]->mdl_name}}</option>                                    
+                                @if(isset($dat->mdl_id))
+                                <option value="{{$dat->mdl_id}}">{{$dat->mdl_name}}</option>                                    
                                 @else
                                 <option>Select</option>
                                     @endif
@@ -205,35 +204,59 @@
                             </div>
                         </div>
                         <!--div class="col-md-4">
-                        <div class="form-group">
-                            <label>Village <span class="text-danger">*</span></label>
-                            <select class="form-control pri-form">
-                                <option>Select</option>
-                                    @isset($dat)
-                                        <option value="">{{$dat[0]->amc}}</option>
-                                    @endisset
-                            </select>
-                        </div>
-                    </div-->
-                        <div class="col-md-4">
                             <div class="form-group">
-                                <label>Reference Trade (Last Trade Details/ Primary trade permit) <span class="text-danger">*</span></label>
-                               @if(isset($dat[0]->t_id))
-                                    <input type="hidden" name="id" value="S{{$dat[0]->id}}" class="form-control pri-form" readonly>
-                                    <input type="" name="t_id" value="t{{$dat[0]->t_id}}" class="form-control pri-form" readonly>
-                                @else
-                                    <input type="" name="t_id" value="t{{$dat[0]->id}}" class="form-control pri-form" readonly>
-                                @endif
+                                <label>Village <span class="text-danger">*</span></label>
+                                <select class="form-control pri-form">
+                                    <option>Select</option>
+                                        @isset($dat)
+                                            <option value="">{{$dat->amc}}</option>
+                                        @endisset
+                                </select>
                             </div>
-                        </div>
+                        </div-->
+                    <script>
+                    function addcom(id){
+                        if(id < {{ count($dat->tc) }}){
+                        $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
+                        $('.pp').attr('onclick','addcom('+(id+1)+')');
+                    }}
+                    function com_ch_1(a){
+                        a=a.parent().parent();
+                        @foreach($dat->tc as $tc)
+                        if({{$tc->com_id}} == a.find('.commodity').val()){
+                                a.find('.aweight').html("Quantity (Available Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class='text-danger'>*</span>");
+                                a.find('.q_id').val("{{ $tc->q_id }}");
+                                a.find('.weight').val("{{ $tc->a_weight }}");
+                            }
+                        @endforeach
+                    }
+                    function awht_ch(a) {
+                        // console.log(a.find('.a_weight').val());
+                        // console.log(a.find('.weight').val());
+                        if(parseInt(a.find('.weight').val()) < parseInt(a.find('.a_weight').val())){
+                            alert("Kindly Enter amount less than Avalable Qunatity");
+                            a.find('.a_weight').val(0);
+                        }
+                    }
+                    </script>
+                    <div class="ordered-list col-12 repeat-div">
+                    @php /* if(isset($dat[0]->tc[0]->p_id)){
+                        $i = count($dat[0]->tc);
+                        // echo $dat[0]->tc[0]->p_id;
+                    }   else {  }*/$i = 1;
+                    for($j=0;$j<$i;$j++){
+                        @endphp
+                        <div class="list com">
+                            <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Commodity <span class="text-danger">*</span></label>
-                                <select class="form-control pri-form commodity" name="com_id">
-                                    @if($dat[0] != '')
-                                    <option value="{{ $dat[0]->com_id }}">{{ $dat[0]->com_name }}</option>
-                                    @else
+                                <select class="form-control pri-form commodity" name="com_id[]" onchange="com_ch_1($(this).parent())">
                                     <option>Select</option>
+                                    @if($dat != '')
+                                    @foreach($dat->tc as $tc)
+                                        <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
+                                    @endforeach
                                     @endif
                                 </select>
                                 <!-- <input type="" name="" class="form-control pri-form"> -->
@@ -241,33 +264,51 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label> Vehicle Number <span class="text-danger">*</span></label>
-                                <input type="" name="veh_id" class="eh_id form-control pri-form"  value="@isset($dat[0]->veh_id){{$dat[0]->veh_id}}@endisset">
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label> Quantity <span class="text-danger">*</span></label>
-                                <input type="" name="a_weight" class="a_weight form-control pri-form" value="@isset($dat){{$dat[0]->a_weight}}@endisset">
-                                <input type="hidden" name="weight" class="form-control pri-form" value="@if(isset($dat[0]->aqty)){{$dat[0]->aqty + $dat[0]->a_weight}}@else{{$dat[0]->a_weight}}@endif" readonly>
+                                <label class="aweight"> Quantity ( Avaliable Quantity )<span class="text-danger">*</span></label>
+                                <input type="" name="a_weight[]" class="a_weight form-control pri-form" value="@isset($dat){{$dat->a_weight}}@endisset" onchange="awht_ch($(this).parent())">
+                                <input type="hidden" name="weight[]" class="weight form-control pri-form" value="@if(isset($dat->aqty)){{$dat->aqty + $dat->a_weight}}@else{{$dat->a_weight}}@endif" readonly>
+                                <!--input type="hidden" name="bal_qty[]" class="bal_qty" value="{{-- $dat[0]->qty --}}"-->
+                                <input type="hidden" name="q_id[]" class="q_id" value="">
                                 </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
-                                <input type="" name="trade_val" class="trade_val form-control pri-form" value="@isset($dat){{($dat[0]->a_weight * $dat[0]->amt)}}@endisset">
+                                <input type="" name="trade_val[]" class="trade_val form-control pri-form" value="@isset($dat->amt){{($dat->a_weight * $dat->amt)}}@endisset">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                     @php } @endphp
+                        @if($i == 1)<div class="add-new pp" onclick="addcom(1)"><i class="priya-plus"></i></div>@endif
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Reference Trade (Last Trade Details/ Primary trade permit) <span class="text-danger">*</span></label>
+                               @if(isset($dat->t_id))
+                                    <input type="hidden" name="id" value="S{{$dat->id}}" class="form-control pri-form" readonly>
+                                    <input type="" name="t_id" value="t{{$dat->t_id}}" class="form-control pri-form" readonly>
+                                @else
+                                    <input type="" name="t_id" value="t{{$dat->id}}" class="form-control pri-form" readonly>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label> Vehicle Number <span class="text-danger">*</span></label>
+                                <input type="" name="veh_id" class="eh_id form-control pri-form"  value="@isset($dat->veh_id){{$dat->veh_id}}@endisset">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Mobile Number <span class="text-danger">*</span></label>
-                                <input type="number" name="mobile" class="number form-control pri-form" value="@isset($dat[0]->mobile){{$dat[0]->mobile}}@endisset"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="10">
+                                <input type="number" name="mobile" class="number form-control pri-form" value="@isset($dat->mobile){{$dat->mobile}}@endisset"  oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="10">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Quantity Details <span class="text-danger">*</span></label>
-                                <input type="" name="q_details" class="form-control pri-form q_details" @isset($dat[0]->q_details) value="{{$dat[0]->q_details}}" @endisset >
+                                <input type="" name="q_details" class="form-control pri-form q_details" @isset($dat->q_details) value="{{$dat->q_details}}" @endisset >
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -275,7 +316,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Permit Validity (from date) <span class="text-danger">*</span></label>
-                                        <input type="date" name="fd" class="fd form-control pri-form" @isset($df[0]) value="{{$df[0]}}" @endisset>
+                                        <input type="date" name="fd" class="fd form-control pri-form" @isset($df) value="{{$df}}" @endisset>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="">Time</label>
@@ -289,7 +330,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Permit Validity (to date) <span class="text-danger">*</span></label>
-                                        <input type="date" name="td" class="td form-control pri-form" @isset($dt[0]) value="{{$dt[0]}}" @endisset>
+                                        <input type="date" name="td" class="td form-control pri-form" @isset($dt) value="{{$dt}}" @endisset>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="">Time</label>
@@ -326,7 +367,7 @@
                     </div>
                     <div class="text-center">
                     @if(isset($dt))
-                        @if(strtotime($dt[0]." ".$dt[1]) > time())
+                        @if(strtotime($dt." ".$dt[1]) > time())
                         <input type="submit" value="Early Arrival" class="btn" name="submit">
                         <input type="submit" value="SOS" class="btn" name="submit">
                         <button id="cancelbtn" class="btn">Cancel Permit</button>    
@@ -335,7 +376,7 @@
                     @else
                         <input type="submit" class="btn" value="Create Permit">
                     @endif
-                    @if(isset($dat[0]->name)) <a href="{{url('print-permit')}}/S{{ $dat[0]->id }}" name="" class="btn">Print Permit</a> @endif 
+                    @if(isset($dat->name)) <a href="{{url('print-permit')}}/S{{ $dat->id }}" name="" class="btn">Print Permit</a> @endif 
                     </div>
                 </form>
                 <form action="{{url('cancel-permit')}}" method="post" class="form2">
@@ -349,7 +390,7 @@
         </div>
     </div>
 </div>
+@dd($dat)
 @include("includes/footer");
 </body>
-{{--@dd($dat)--}}
 </html>
