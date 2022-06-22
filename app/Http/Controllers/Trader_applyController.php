@@ -187,9 +187,9 @@ class Trader_applyController extends Controller
             }
         }
         elseif ($id[0] == 'S'){
-            $data['dat'] = $trade->secondary1(substr($id, 1))[0];
+            $data['dat'] = $trade->secondary1(substr($id, 1));
             // var_dump($data['dat']);
-            $data['dat']->value = $data['dat']->amt * $data['dat']->a_weight;
+            // $data['dat']->value = $data['dat']->amt * $data['dat']->a_weight;
             $data['dat']->veh_detail = $data['dat']->veh_id;
             $data['dat']->valid_to = $data['dat']->to_date;
             $data['dat']->valid_from = $data['dat']->from_date;
@@ -282,8 +282,7 @@ class Trader_applyController extends Controller
         return view('secondary-permit',$data);
     }
 
-    public function add_sec_permit(Request $request)
-    {
+    public function add_sec_permit(Request $request){
         $trade = new premit_model();
         $query = $trade->add2($request);
         return redirect('print-permit/S'.$query)->with('alert', 'Secoundary Permit number S' . $query . ' Created');
@@ -308,8 +307,8 @@ class Trader_applyController extends Controller
         }
         if ($td[0] == 'S') {
             $data['dat'] = $trade->secondary(substr($td, 1));
-            $data['dt'] = explode(' ', $data['dat']->to_date)[0];
-            $data['df'] = explode(' ', $data['dat']->from_date)[0];
+            $data['dt'] = explode(' ', $data['dat']->to_date);
+            $data['df'] = explode(' ', $data['dat']->from_date);
             $data['type'] = 'secondary';
         }
         return view('secondary-permit-creation', $data);
@@ -330,7 +329,8 @@ class Trader_applyController extends Controller
         $input['valid_from'] = $input['fd'].' '.$input['ft'];
         $input['valid_to'] = $input['td'].' '.$input['tt'];
         $id = $input['id'];
-        DB::update('update `trade` set `a_weight` = ? where `id` = ?',[$input['bal_qty'],$input['t_id']]);
+        echo 'kk';
+        DB::update('update `trade_com` set `a_weight` = ? where `id` = ?',[($input['bal_qty']-$input['a_weight']),$input['t_id']]);
         unset($input['bal_qty']);
         // unset($input['trade_id']);
         unset($input['_token']);
@@ -469,11 +469,6 @@ class Trader_applyController extends Controller
         /*DB::enableQueryLog();
         $a = DB::table('trade_com')->where('t_id',$input['id'])->where('q_id',$input['qty'])->where('com_id',$input['com'])->get('weight')[0];
         var_dump(DB::getQueryLog());*/
-        return 1;
-    }
-
-    public function com(){
-        var_dump("kk");
         return 1;
     }
     public function abc1(Request $request){

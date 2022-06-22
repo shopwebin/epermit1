@@ -83,7 +83,7 @@
                             var w = $(".fd").val();
                             var h = $(".td").val();
                             // alert(w);
-                            var strDate = (new Date()).toISOString().split('T');
+                            var strDate = (new Date()).toISOString().split('T')[0];
                             // alert(strDate);
                             if(w < strDate){
                                 alert("old date permit can't be Created");
@@ -98,7 +98,7 @@
                         $(".td").change(function() {
                             var w = $(".fd").val();
                             var h = $(".td").val();
-                            var strDate = (new Date()).toISOString().split('T');
+                            var strDate = (new Date()).toISOString().split('T')[0];
                             // alert(w);
                             // alert(strDate);
                             if((w < strDate)||(w >= h)){
@@ -215,35 +215,35 @@
                             </div>
                         </div-->
                     <script>
-                    function addcom(id){
-                        if(id < {{ count($dat->tc) }}){
-                        $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
-                        $('.pp').attr('onclick','addcom('+(id+1)+')');
-                    }}
-                    function com_ch_1(a){
-                        a=a.parent().parent();
-                        @foreach($dat->tc as $tc)
-                        if({{$tc->com_id}} == a.find('.commodity').val()){
-                                a.find('.aweight').html("Quantity (Available Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class='text-danger'>*</span>");
-                                a.find('.q_id').val("{{ $tc->q_id }}");
-                                a.find('.weight').val("{{ $tc->a_weight }}");
-                            }
-                        @endforeach
-                    }
-                    function awht_ch(a) {
-                        // console.log(a.find('.a_weight').val());
-                        // console.log(a.find('.weight').val());
-                        if(parseInt(a.find('.weight').val()) < parseInt(a.find('.a_weight').val())){
-                            alert("Kindly Enter amount less than Avalable Qunatity");
-                            a.find('.a_weight').val(0);
+                        function addcom(id){
+                            if(id < {{ count($dat->tc) }}){
+                            $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
+                            $('.pp').attr('onclick','addcom('+(id+1)+')');
+                        }}
+                        function com_ch_1(a){
+                            a=a.parent().parent();
+                            @foreach($dat->tc as $tc)
+                            if({{$tc->com_id}} == a.find('.commodity').val()){
+                                    a.find('.aweight').html("Quantity (Available Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class='text-danger'>*</span>");
+                                    a.find('.q_id').val("{{ $tc->q_id }}");
+                                    a.find('.weight').val("{{ $tc->a_weight }}");
+                                    a.find('.tc_id').val("{{ $tc->tc_id }}");
+                                }
+                            @endforeach
                         }
-                    }
+                        function awht_ch(a) {
+                            if(parseInt(a.find('.weight').val()) < parseInt(a.find('.a_weight').val())){
+                                alert("Kindly Enter amount less than Avalable Qunatity");
+                                a.find('.a_weight').val(0);
+                            }
+                        }
                     </script>
                     <div class="ordered-list col-12 repeat-div">
-                    @php /* if(isset($dat[0]->tc[0]->p_id)){
-                        $i = count($dat[0]->tc);
+                    @php 
+                     if(isset($dat->tc[0]->p_id)){
+                         $i = count($dat->tc);
                         // echo $dat[0]->tc[0]->p_id;
-                    }   else {  }*/$i = 1;
+                    }   else { $i = 1; }
                     for($j=0;$j<$i;$j++){
                         @endphp
                         <div class="list com">
@@ -255,7 +255,7 @@
                                     <option>Select</option>
                                     @if($dat != '')
                                     @foreach($dat->tc as $tc)
-                                        <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
+                                        <option value="{{ $tc->com_id }}" @if($tc->com_id == $dat->tc[$j]->com_id) selected @endif >{{ $tc->com_name }}</option>
                                     @endforeach
                                     @endif
                                 </select>
@@ -265,16 +265,17 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="aweight"> Quantity ( Avaliable Quantity )<span class="text-danger">*</span></label>
-                                <input type="" name="a_weight[]" class="a_weight form-control pri-form" value="@isset($dat){{$dat->a_weight}}@endisset" onchange="awht_ch($(this).parent())">
-                                <input type="hidden" name="weight[]" class="weight form-control pri-form" value="@if(isset($dat->aqty)){{$dat->aqty + $dat->a_weight}}@else{{$dat->a_weight}}@endif" readonly>
-                                <!--input type="hidden" name="bal_qty[]" class="bal_qty" value="{{-- $dat[0]->qty --}}"-->
-                                <input type="hidden" name="q_id[]" class="q_id" value="">
+                                <input type="" name="a_weight[]" class="a_weight form-control pri-form" value="@isset($dat->tc[$j]){{$dat->tc[$j]->a_weight}}@endisset" onchange="awht_ch($(this).parent())">
+                                <input type="hidden" name="weight[]" class="weight form-control pri-form" value="@if(isset($dat->tc[$j]->weight1)){{$dat->tc[$j]->a_weight + $dat->tc[$j]->weight1}}@else{{$dat->tc[$j]->a_weight}}@endif">
+                                @if(isset($dat->tc[$j]->weight1))
+                                <input type="hidden" name="tc_id[]" class="tc_id" value="{{ $dat->tc[$j]->tc_id }}">@endif
+                                <input type="hidden" name="q_id[]" class="q_id" value="@if(isset($dat->tc[$j]->q_id)){{$dat->tc[$j]->q_id }}@endif">
                                 </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
-                                <input type="" name="trade_val[]" class="trade_val form-control pri-form" value="@isset($dat->amt){{($dat->a_weight * $dat->amt)}}@endisset">
+                                <input type="" name="trade_val[]" class="trade_val form-control pri-form" value="@isset($dat->tc[$j]->trade_value){{$dat->tc[$j]->trade_value}}@endisset">
                             </div>
                         </div>
                         </div>
@@ -316,7 +317,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Permit Validity (from date) <span class="text-danger">*</span></label>
-                                        <input type="date" name="fd" class="fd form-control pri-form" @isset($df) value="{{$df}}" @endisset>
+                                        <input type="date" name="fd" class="fd form-control pri-form" @isset($df) value="{{$df[0]}}" @endisset>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="">Time</label>
@@ -330,7 +331,7 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <label>Permit Validity (to date) <span class="text-danger">*</span></label>
-                                        <input type="date" name="td" class="td form-control pri-form" @isset($dt) value="{{$dt}}" @endisset>
+                                        <input type="date" name="td" class="td form-control pri-form" @isset($dt) value="{{$dt[0]}}" @endisset>
                                     </div>
                                     <div class="col-md-6">
                                         <label for="">Time</label>
@@ -342,7 +343,7 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label for=""> Sales Invoice/Reciept </label>
-                                <input type="" class="invoice form-control pri-form" name="invoice">
+                                <input type="" class="invoice form-control pri-form" name="invoice" value="@if(isset($dat->invoice)){{$dat->invoice}}@endif">
                             </div>
                         </div>
                         @if(isset($dt))
@@ -367,7 +368,7 @@
                     </div>
                     <div class="text-center">
                     @if(isset($dt))
-                        @if(strtotime($dt." ".$dt[1]) > time())
+                        @if(strtotime($dt[0]." ".$dt[1]) > time())
                         <input type="submit" value="Early Arrival" class="btn" name="submit">
                         <input type="submit" value="SOS" class="btn" name="submit">
                         <button id="cancelbtn" class="btn">Cancel Permit</button>    
@@ -390,7 +391,7 @@
         </div>
     </div>
 </div>
-@dd($dat)
+{{--@dd($dat)--}}
 @include("includes/footer");
 </body>
 </html>

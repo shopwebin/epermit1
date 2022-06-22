@@ -230,12 +230,13 @@
                                 </select>
                             </div>
                         </div>
-                <script>
-                    function addcom(id){
-                        if(id < {{ count($dat[0]->tc) }}){
-                        $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
-                        $('.pp').attr('onclick','addcom('+(id+1)+')');
-                    }}
+                    <script>
+                        function addcom(id){
+                            if(id < {{ count($dat[0]->tc) }}){
+                                $('.repeat-div').append("<div class = 'list com"+id+"'>"+$('.repeat-div').find('.com').html()+"</div>");
+                                $('.pp').attr('onclick','addcom('+(id+1)+')');
+                            }
+                        }
                     </script>
                     <div class="ordered-list col-12 repeat-div">
                         
@@ -264,15 +265,15 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label class="bqty"> Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class="text-danger">*</span></label>
-                                <input type="" value="{{ $dat[0]->a_weight }}" name="a_weight[]" class="form-control pri-form a_weight" onchange="a_weight_ch($(this).parent())" required>
-                                <input type="hidden" name="bal_qty[]" class="bal_qty" value="{{-- $dat[0]->qty --}}">
-                                <input type="hidden" name="q_id[]" class="q_id" value="">
+                                <input type="" value="@isset($dat[0]->tc[$j]->a_weight){{$dat[0]->tc[$j]->a_weight}}@endisset" name="a_weight[]" class="form-control pri-form a_weight" onchange="a_weight_ch($(this).parent())" required>
+                                <input type="hidden" name="bal_qty[]" class="bal_qty" value="@if(isset($dat[0]->tc[$j]->weight1)){{($dat[0]->tc[$j]->a_weight + $dat[0]->tc[$j]->weight1)}}@else{{$dat[0]->tc[$j]->a_weight}}@endif">
+                                <input type="hidden" name="q_id[]" class="q_id" value="@if(isset($dat[0]->tc[$j]->q_id)){{$dat[0]->tc[$j]->q_id }}@endif">
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
-                                <input type="" name="value[]" class="trade_val form-control pri-form" @isset($dat[0]->value) value="{{$dat[0]->value}}" @endisset required>
+                                <input type="" name="value[]" class="trade_val form-control pri-form" value="@isset($dat[0]->tc[$j]->trade_value){{$dat[0]->tc[$j]->trade_value}}@endisset" required>
                             </div>
                         </div>
                         </div>
@@ -390,6 +391,8 @@
         </div>
     </div>
 </div>
+</div>
+{{--@dd($dat)--}}
 @include("includes/footer");
 </body>
 

@@ -10,6 +10,7 @@
                     <btn onclick="helpModal('#add-dist-help')" title="Help"><i class="priya-info"></i></btn>
                     <btn onclick="" title="History"><i class="priya-history"></i></btn>
                 </div-->
+                <style> .btn{margin:2px;}   </style>
             </h5>
             @if(session()->has('alert'))
                 <script>

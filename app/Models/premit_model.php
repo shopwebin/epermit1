@@ -26,6 +26,7 @@ class premit_model extends Model
             'mobile'    => $request->input('mobile'),
             'invoice'    => $request->input('invoice'),
             'trader_id' => '4',
+            't_id' => $request->input('t_id'),
             'q_details' => $request->input('q_details'),
         ]);
         for($i=0;$i<count($request->input('bal_qty'));$i++){
@@ -50,6 +51,40 @@ class premit_model extends Model
             'a_weight' => $request->input('a_weight'),*/
     }
     
+    public static function add2($request){
+        $id = DB::table('spermit')->insertGetId([
+            'name' => $request->input('name'),
+            'ad1'=> $request->input('ad1'),
+            'ad2' => $request->input('ad2'),
+            'stt_id' => $request->input('stt_id'),
+            'dis_id' => $request->input('dis_id'),
+            'mdl_id' => $request->input('mdl_id'),
+            't_id' => substr($request->input('t_id'),1),
+            // 'c_id' => $request->input('com_id'),
+            // 'a_weight' => $request->input('a_weight'),
+            'q_details' => $request->input('q_details'),
+            'veh_id' => $request->input('veh_id'),
+            'mobile' => $request->input('mobile'),
+            'from_date' => $request->input('fd').' '.$request->input('ft'),
+            'to_date' => $request->input('td').' '.$request->input('tt'),
+            'invoice' => $request->input('invoice')
+        ]);
+        for($i=0;$i<count($request->input('q_id'));$i++){
+            if(!empty($request->input('com_id')[$i])){
+            $a = DB::table('multi_permit')->insertGetId([
+                'com_id'=>$request->input('com_id')[$i],
+                'weight'=>$request->input('weight')[$i],
+                'a_weight'=>$request->input('a_weight')[$i],
+                'trade_value'=>$request->input('trade_val')[$i],
+                'q_id'=> $request->input('q_id')[$i],
+                'p_id'=>'S'.$id
+            ]);
+            $b = DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('a_weight')[$i],substr($request->input('t_id'),1),$request->input('com_id')[$i]]);
+        }}   
+        // DB::select('update `trade` set  `a_weight` = `a_weight` - '.$request->input('a_weight').' where `id` = '.substr($request->input('t_id'),1));
+        return $id;
+    }
+
     public function ae_update($request){
         $q = DB::table('aepermit')->insertGetId([
             'name' => $request->input('name'),
@@ -94,7 +129,7 @@ class premit_model extends Model
         // DB::enableQueryLog();
         // dd(DB::getQueryLog());
         $q = DB::select('select permit.*,`trade`.`a_weight` as `qty`,`trade`.`id` as `trade_id` from `permit` inner join `trade` on `trade`.`permit_id` = `permit`.`id` where `permit`.`id` = ?', [$id]);
-        $q[0]->tc = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
+        $q[0]->tc = DB::select('select trade_com.a_weight as weight1,trade_com.tc_id,`multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN permit on permit.id = SUBSTRING(multi_permit.p_id,2) RIGHT JOIN trade_com on  (trade_com.t_id = permit.t_id AND trade_com.com_id = multi_permit.com_id) JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
         return $q;
         /*->join('districts','districts.id','=','permit.dis_id')
         ->join('mandals','mandals.id','=','permit.mdl_id')*/
@@ -111,46 +146,29 @@ class premit_model extends Model
             ->join('trade','t_id','=','trade.id')->join('amc','amc.id','=','amc_id')
             ->where('id',$id)->get('spermit.*,commodity.*,amc.name,trade.weight,trade.a_weight');*/
             // var_dump($dat);
-        $dat = DB::select('select spermit.*,commodity.*,amc.name as amc,trade.weight,trade.a_weight as aqty,districts.name as dis_name, mandals.name as mdl_name from spermit inner join commodity on commodity.com_id = spermit.c_id inner join trade on spermit.t_id = trade.id inner join amc on amc.id = trade.amc_id join districts on districts.id = spermit.dis_id join mandals on mandals.id = spermit.mdl_id where spermit.id =  ?', [$id])[0];
-        $dat->tc = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
+        $dat = DB::select('select spermit.*,amc.name as amc,districts.name as dis_name, mandals.name as mdl_name from spermit inner join trade on spermit.t_id = trade.id inner join amc on amc.id = trade.amc_id join districts on districts.id = spermit.dis_id join mandals on mandals.id = spermit.mdl_id where spermit.id =  ?', [$id])[0];
+        $dat->tc = DB::select('select trade_com.a_weight as weight1,trade_com.tc_id,`multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN spermit on spermit.id = SUBSTRING(multi_permit.p_id,2) RIGHT JOIN trade_com on  (trade_com.t_id = spermit.t_id AND trade_com.com_id = multi_permit.com_id) JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "S'.$id.'"');
+        // $dat->w = DB::select('select trade_com.a_weight from trade_com join spermit on spermit.t_id = trade_com.t_id where spermit.id = ?',[$id]);
+        // var_dump($dat->tc);
         return $dat;
     }
 
     public function secondary1($id)
     {
-        // var_dump($dat);
-        $dat = DB::select('select spermit.*,commodity.*,amc.name as amc,trade.weight,trade.a_weight as aqty,districts.name as dis_name, mandals.name as mdl_name, trader_apply.*,quantity.qty_name from spermit inner join commodity on commodity.com_id = spermit.c_id inner join trade on spermit.t_id = trade.id inner join amc on amc.id = trade.amc_id join districts on districts.id = spermit.dis_id join mandals on mandals.id = spermit.mdl_id join trader_apply on trader_apply.id = trade.trader_id join quantity on quantity.id = commodity.q_id where spermit.id =  ?', [$id]);
+        $dat = DB::select('select spermit.*,amc.name as amc,districts.name as dis_name, mandals.name as mdl_name, trader_apply.* from spermit  inner join trade on spermit.t_id = trade.id inner join amc on amc.id = trade.amc_id join districts on districts.id = spermit.dis_id join mandals on mandals.id = spermit.mdl_id join trader_apply on trader_apply.id = trade.trader_id  where spermit.id =  ?', [$id])[0];
+        $dat->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "S'.$id.'"');
         return $dat;
-    }
-
-    public static function add2($request){
-        $id = DB::table('spermit')->insertGetId([
-            'name' => $request->input('name'),
-            'ad1'=> $request->input('ad1'),
-            'ad2' => $request->input('ad2'),
-            'stt_id' => $request->input('stt_id'),
-            'dis_id' => $request->input('dis_id'),
-            'mdl_id' => $request->input('mdl_id'),
-            'c_id' => $request->input('com_id'),
-            't_id' => substr($request->input('t_id'),1),
-            'a_weight' => $request->input('a_weight'),
-            'q_details' => $request->input('q_details'),
-            'veh_id' => $request->input('veh_id'),
-            'mobile' => $request->input('mobile'),
-            'from_date' => $request->input('fd').' '.$request->input('ft'),
-            'to_date' => $request->input('td').' '.$request->input('tt'),
-            'invoice' => $request->input('invoice')
-        ]);
-        DB::select('update `trade` set  `a_weight` = `a_weight` - '.$request->input('a_weight').' where `id` = '.substr($request->input('t_id'),1));
-        return $id;
     }
 
     public function edit2($request){
         $a = $request->input('a_weight');
-        // DB::enableQueryLog(); 
-        $id = DB::update('update spermit set name = ?,ad1 = ?,ad2 = ?,stt_id = ?,dis_id = ?,mdl_id = ?,a_weight = ?,q_details = ?,veh_id = ?,mobile = ?,from_date = ?,to_date=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('stt_id'),$request->input('dis_id'),$request->input('mdl_id'),$a,$request->input('q_details'),$request->input('veh_id'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
+        DB::enableQueryLog(); 
+        $id = DB::update('update spermit set name = ?,ad1 = ?,ad2 = ?,stt_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_id = ?,mobile = ?,from_date = ?,to_date=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('stt_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_id'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
+        for($i=0;$i<count($a);$i++){
+            
+        }
         DB::update('update trade set a_weight = ? where id = ?', [$request->input('weight')-$a,substr($request->input('t_id'),1)]);
-        // dd(DB::getQueryLog());
+        dd(DB::getQueryLog());
         return 1;
     }
 
