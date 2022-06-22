@@ -162,13 +162,14 @@ class premit_model extends Model
 
     public function edit2($request){
         $a = $request->input('a_weight');
-        DB::enableQueryLog(); 
+        // DB::enableQueryLog(); 
         $id = DB::update('update spermit set name = ?,ad1 = ?,ad2 = ?,stt_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_id = ?,mobile = ?,from_date = ?,to_date=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('stt_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_id'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
         for($i=0;$i<count($a);$i++){
-            
+            DB::update('update multi_permit set a_weight ='.$a[$i].' where id = '.$request->input('id'));
+            DB::update('update `trade_com` set a_weight = ? where com_id = ? and t_id = ?',[($request->input('weight')[$i]-$a[$i]),$request->input('com_id')[$i],$request->input('t_id')]);
         }
-        DB::update('update trade set a_weight = ? where id = ?', [$request->input('weight')-$a,substr($request->input('t_id'),1)]);
-        dd(DB::getQueryLog());
+        // DB::update('update trade set a_weight = ? where id = ?', [$request->input('weight')-$a,substr($request->input('t_id'),1)]);
+        // dd(DB::getQueryLog());
         return 1;
     }
 

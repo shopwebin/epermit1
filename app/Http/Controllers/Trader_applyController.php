@@ -321,17 +321,22 @@ class Trader_applyController extends Controller
             $submit = $input['submit'];
             unset($input['submit']);
             if($submit == 'SOS'){
-                $input['c_status']=2;
+                // $input['c_status']=2;
+                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 2,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
             } elseif($submit == 'Early Arrival') {
-                $input['c_status']=3;
+                // $input['c_status']=3;
+                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 3,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
             }
         }
         $input['valid_from'] = $input['fd'].' '.$input['ft'];
         $input['valid_to'] = $input['td'].' '.$input['tt'];
         $id = $input['id'];
-        echo 'kk';
-        DB::update('update `trade_com` set `a_weight` = ? where `id` = ?',[($input['bal_qty']-$input['a_weight']),$input['t_id']]);
-        unset($input['bal_qty']);
+        // DB::update('update `trade_com` set `a_weight` = ? where `id` = ?',[($input['bal_qty']-$input['a_weight']),$input['t_id']]);
+        $a = $request->input('a_weight');
+        for($i=0;$i<count($a);$i++){
+            DB::update('update multi_permit set a_weight ='.$a[$i].' where p_id = "P'.$request->input('id').'" and com_id = '.$request->input('com_id')[$i]);
+            DB::update('update `trade_com` set `a_weight` = ? where com_id = ? and t_id = ?',[($request->input('bal_qty')[$i]-$a[$i]),$request->input('com_id')[$i],$request->input('t_id')]);
+        }
         // unset($input['trade_id']);
         unset($input['_token']);
         unset($input['fd']);
@@ -339,14 +344,24 @@ class Trader_applyController extends Controller
         unset($input['td']);
         unset($input['tt']);
         // DB::enableQueryLog();
-        $trade1 = DB::table('permit')->where('id', $id)->update($input);
+        // $trade1 = DB::table('permit')->where('id', $id)->update($input);
         // dd(DB::getQueryLog());
         if(isset($submit)){
             $trade = new premit_model();
-            $data['dat'] = $trade->primary1($id)[0];
+            $data['dat'] = $trade->primary1($id);
             $data['dt'] = explode(' ', $data['dat']->valid_to);
             $data['df'] = explode(' ', $data['dat']->valid_from);
-            $data['type'] = 'Primary';
+            $data['type'] = 'Primary '.$submit.' ';
+            $data['a_weight'] = '';
+            $data['com_name'] = '';
+            $data['value'] = 0;
+            $data['qty_name'] = '';
+            foreach($data['dat']->mp as $mp){
+                $data['a_weight'] .= ','.$mp->a_weight;
+                $data['com_name'] .= ','.$mp->com_name;
+                $data['value'] += $mp->trade_value;
+                $data['qty_name'] .= ','.$mp->qty_name;
+            }
             return view('secondary-permit',$data);
         }else{
             return redirect('trade-list')->with('alert', 'Primary Premit updated Successfully');
