@@ -135,9 +135,9 @@ class premit_model extends Model
         ->join('mandals','mandals.id','=','permit.mdl_id')*/
     }
     public static function primary1($id){
-        $q = DB::select('select permit.*,trader_apply.* from permit  inner join trader_apply on trader_apply.id = permit.trader_id where permit.id = ?', [$id])[0];
-        $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
+        $q = DB::select('select permit.*,trader_apply.* from permit inner join trader_apply on trader_apply.id = permit.trader_id where permit.id = ?', [$id])[0];
         // var_dump($id);
+        $q->mp = DB::select('select `multi_permit`.*,trade_com.a_weight as weight1,trade_com.tc_id as tdc_id,quantity.qty_name,commodity.com_name from `multi_permit` JOIN permit on permit.id = SUBSTRING(multi_permit.p_id,2) RIGHT JOIN trade_com on  (trade_com.t_id = permit.t_id AND trade_com.com_id = multi_permit.com_id) JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "P'.$id.'"');
         return $q;
     }
     public function secondary($id)

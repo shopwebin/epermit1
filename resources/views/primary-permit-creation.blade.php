@@ -108,7 +108,7 @@
                                 });
                             });
 
-                            $(document).ready(function() {
+                            /*$(document).ready(function() {
                                 $('#cancelbtn').click(function(e){
                                     e.preventDefault();
                                     $('.c_qty1').val($('.c_qty').val());
@@ -117,7 +117,7 @@
                                     $('.c_tid1').val($('input[name=t_id]').val());
                                     $('.form2').submit();
                                 });
-                            });
+                            });*/
                             function com_ch_1(a){
                                 a=a.parent().parent();
                                 // console.log(a.html());
@@ -133,19 +133,21 @@
                                 console.log(a.html());
                                 var c =a.find('.commodity').val();
                                 var w = a.find('.a_weight').val();
-                                var q1 = 0;
+                                var q1 = parseInt(a.find('.bal_qty').val());
+                                if(q1 < 1){
+                                q1 = 0;
                                 @foreach($dat[0]->tc as $tc)
                                     if({{$tc->com_id}} == c){
                                         q1 = {{ $tc->a_weight }};
                                         $('.bal_qty').val(q1);
                                         var q = {{$tc->q_id}};
                                     }
-                                @endforeach
+                                @endforeach }
                                 if(w > q1){
-                                            alert("Kindly enter value below or equal available quantity");
-                                            a.find('.a_weight').val(q1);
-                                            // $('.bal_qty').val();
-                                        } else {
+                                    alert("Kindly enter value below or equal available quantity");
+                                    a.find('.a_weight').val(q1);
+                                    // $('.bal_qty').val();
+                                } else {
                                 $.ajax({
                                     type: 'POST',
                                     url: "{{url('com_val')}}",
@@ -248,7 +250,7 @@
                         @endphp
                         <div class="list com">
                             <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label> Commodity <span class="text-danger">*</span></label>
                                 <select class="form-control pri-form commodity" name="com_id[]" onchange="com_ch_1($(this).parent())">
@@ -262,20 +264,28 @@
                                 </select>
                             </div>
                         </div>                        
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
-                                <label class="bqty"> Quantity(Balance Quantity {{ $tc->a_weight }}@isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class="text-danger">*</span></label>
+                                <label class="bqty"> Quantity(Balance Quantity @if(isset($dat[0]->tc[$j]->weight1)){{($dat[0]->tc[$j]->a_weight + $dat[0]->tc[$j]->weight1)}}@else{{$dat[0]->tc[$j]->a_weight}}@endif @isset($tc->qty_name) {{ $tc->qty_name }} @endisset ) <span class="text-danger">*</span></label>
                                 <input type="" value="@isset($dat[0]->tc[$j]->a_weight){{$dat[0]->tc[$j]->a_weight}}@endisset" name="a_weight[]" class="form-control pri-form a_weight" onchange="a_weight_ch($(this).parent())" required>
                                 <input type="hidden" name="bal_qty[]" class="bal_qty" value="@if(isset($dat[0]->tc[$j]->weight1)){{($dat[0]->tc[$j]->a_weight + $dat[0]->tc[$j]->weight1)}}@else{{$dat[0]->tc[$j]->a_weight}}@endif">
                                 <input type="hidden" name="q_id[]" class="q_id" value="@if(isset($dat[0]->tc[$j]->q_id)){{$dat[0]->tc[$j]->q_id }}@endif">
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
                                 <input type="" name="value[]" class="trade_val form-control pri-form" value="@isset($dat[0]->tc[$j]->trade_value){{$dat[0]->tc[$j]->trade_value}}@endisset" required>
                             </div>
                         </div>
+                        @isset($dt)
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for=""> Cancelled Quantity </label>
+                                <input type="number" class="c_qty form-control pri-form" name="c_qty[]">
+                            </div>
+                        </div>
+                        @endisset
                         </div>
                     </div>
                      @php } @endphp
@@ -357,19 +367,13 @@
                                 </select-->
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for=""> Cancelled Quantity </label>
-                                <input type="number" class="c_qty form-control pri-form">
-                            </div>
-                        </div>
                         @endif
                         <div class="col-12 text-center">
                         @if(isset($dt))
-                             @if((strtotime($dt[0]." ".$dt[1]) > time()) && ($dat[0]->c_status == 1)) 
+                            @if((strtotime($dt[0]." ".$dt[1]) > time()) && ($dat[0]->c_status == 1)) 
                                 <input type="submit" value="Early Arrival" class="btn" name="submit">
                                 <input type="submit" value="SOS" class="btn" name="submit">
-                                <button id="cancelbtn" class="btn">Cancel Permit</button>
+                                <button type="submit" value="Cancel" class="btn" name="submit">Cancel Permit</button>
                                 <input type="submit" name="" class="btn" value="Edit Permit">
                             @endif
                         @else
@@ -380,13 +384,13 @@
                         @endif
                     </div>
                 </form>
-                <form action="{{url('cancel-permit')}}" method="post" class="form2">
+                <!--form action="{{url('cancel-permit')}}" method="post" class="form2">
                 @csrf    
                     <input type="hidden" name="c_qty" class="c_qty1">
                     <input type="hidden" name="c_reason" class="c_reason1">
                     <input type="hidden" name="id" class="c_id1">
                     <input type="hidden" name="tid" class="c_tid1">
-                </form>
+                </form-->
             </div>
         </div>
     </div>

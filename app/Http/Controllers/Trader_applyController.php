@@ -178,8 +178,12 @@ class Trader_applyController extends Controller
                 $data['com_name'] = '';
                 $data['value'] = 0;
                 $data['qty_name'] = '';
-                foreach($data['dat']->mp as $mp){
-                    $data['a_weight'] .= ','.$mp->a_weight;
+                foreach($data['dat']->mp as $mp){                
+                    if($mp->c_qty){
+                        $data['a_weight'] .= ','.$mp->a_weight.'-'.$mp->c_qty.'='.($mp->a_weight-$mp->c_qty);
+                    }else{
+                        $data['a_weight'] .= ','.$mp->a_weight;
+                    }
                     $data['com_name'] .= ','.$mp->com_name;
                     $data['value'] += $mp->trade_value;
                     $data['qty_name'] .= ','.$mp->qty_name;
@@ -200,8 +204,11 @@ class Trader_applyController extends Controller
             $data['com_name'] = '';
             $data['value'] = 0;
             $data['qty_name'] = '';
-            foreach($data['dat']->mp as $mp){
-                $data['a_weight'] .= ','.$mp->a_weight;
+            foreach($data['dat']->mp as $mp){                
+                if($mp->c_qty){
+                    $data['a_weight'] .= ','.$mp->a_weight.'-'.$mp->c_qty;
+                }else{
+                $data['a_weight'] .= ','.$mp->a_weight; }
                 $data['com_name'] .= ','.$mp->com_name;
                 $data['value'] += $mp->trade_value;
                 $data['qty_name'] .= ','.$mp->qty_name;
@@ -246,42 +253,6 @@ class Trader_applyController extends Controller
         return view('secondary-permit',$data);
     }
 
-    public function cancel_permit(Request $request){
-        // echo 'kk';
-        $trade = new premit_model();
-        $data = [];
-        $id = $request->all();
-        if ($id['id'][0] == 'P'){
-            $data['dat'] = $trade->primary1(substr($id['id'],1))[0];
-            // var_dump($data);
-            $data['dt'] = explode(' ', $data['dat']->valid_to);
-            $data['df'] = explode(' ', $data['dat']->valid_from);
-            $data['type'] = 'Primary';
-            // DB::enableQueryLog();  
-            // var_dump($data['dat']);
-            if($data['dat']->c_status){                
-                DB::update('update trade set a_weight = a_weight + ? where id = ?',[$id['c_qty'],$id['tid']]);
-                $query = $trade->pcancel($id);
-                $data['dat'] = $trade->primary1(substr($id['id'],1))[0];
-            }
-        }
-        elseif ($id['id'][0] == 'S'){
-            $data['dat'] = $trade->secondary1(substr($id['id'], 1))[0];
-            $data['dat']->value = $data['dat']->amt * $data['dat']->a_weight;
-            $data['dat']->veh_detail = $data['dat']->veh_id;
-            $data['dat']->valid_to = $data['dat']->to_date;
-            $data['dat']->valid_from = $data['dat']->from_date;
-            $data['dt'] = explode(' ', $data['dat']->valid_to);
-            $data['df'] = explode(' ', $data['dat']->from_date);
-            if($data['dat']->c_status){
-                DB::update('update trade set a_weight = a_weight + ? where id = ?',[$data['dat']->a_weight,$data['dat']->t_id]);
-                $query = $trade->scancel(substr($id['id'], 1));
-            }
-            $data['type'] = 'Secondary';
-        }
-        return view('secondary-permit',$data);
-    }
-
     public function add_sec_permit(Request $request){
         $trade = new premit_model();
         $query = $trade->add2($request);
@@ -316,36 +287,46 @@ class Trader_applyController extends Controller
 
     public function edit_pre_permit($id, Request $request){
         $input = $request->all();
+        // DB::enableQueryLog();
         $data = [];
         if(isset($input['submit'])){
             $submit = $input['submit'];
             unset($input['submit']);
             if($submit == 'SOS'){
                 // $input['c_status']=2;
-                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 2,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
+                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 2,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),$request->input('id')]);
             } elseif($submit == 'Early Arrival') {
                 // $input['c_status']=3;
-                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 3,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),substr($request->input('id'),1)]);
+                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 3,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),$request->input('id')]);
+            } elseif($submit == 'Cancel'){
+                $id = DB::update('update permit set name = ?,ad1 = ?,c_status = 0,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=?,c_reason=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),$request->input('c_reason'),$request->input('id')]);
             }
+        } else {
+            $id = DB::update('update permit set name = ?,ad1 = ?,ad2 = ?,state_id = ?,dis_id = ?,mdl_id = ?,q_details = ?,veh_detail = ?,mobile = ?,valid_from = ?,valid_to=? where id = ?',[$request->input('name'),$request->input('ad1'),$request->input('ad2'),$request->input('state_id'),$request->input('dis_id'),$request->input('mdl_id'),$request->input('q_details'),$request->input('veh_detail'),$request->input('mobile'),$request->input('fd').' '.$request->input('ft'),$request->input('td').' '.$request->input('tt'),$request->input('id')]);
         }
         $input['valid_from'] = $input['fd'].' '.$input['ft'];
         $input['valid_to'] = $input['td'].' '.$input['tt'];
         $id = $input['id'];
+        // var_dump($request->input('c_qty'));
         // DB::update('update `trade_com` set `a_weight` = ? where `id` = ?',[($input['bal_qty']-$input['a_weight']),$input['t_id']]);
         $a = $request->input('a_weight');
         for($i=0;$i<count($a);$i++){
-            DB::update('update multi_permit set a_weight ='.$a[$i].' where p_id = "P'.$request->input('id').'" and com_id = '.$request->input('com_id')[$i]);
-            DB::update('update `trade_com` set `a_weight` = ? where com_id = ? and t_id = ?',[($request->input('bal_qty')[$i]-$a[$i]),$request->input('com_id')[$i],$request->input('t_id')]);
+            if($submit == 'Cancel'){
+                DB::update('update multi_permit set c_qty ='.$request->input('c_qty')[$i].' where p_id = "P'.$request->input('id').'" and com_id = '.$request->input('com_id')[$i]);
+                DB::update('update `trade_com` set `a_weight` = ? where com_id = ? and t_id = ?',[($request->input('bal_qty')[$i]-$a[$i]+$request->input('c_qty')[$i]),$request->input('com_id')[$i],$request->input('t_id')]);
+            }else{
+                DB::update('update multi_permit set a_weight ='.$a[$i].' where p_id = "P'.$request->input('id').'" and com_id = '.$request->input('com_id')[$i]);
+                DB::update('update `trade_com` set `a_weight` = ? where com_id = ? and t_id = ?',[($request->input('bal_qty')[$i]-$a[$i]),$request->input('com_id')[$i],$request->input('t_id')]);
+            }
         }
+        // dd(DB::getQueryLog());
         // unset($input['trade_id']);
         unset($input['_token']);
         unset($input['fd']);
         unset($input['ft']);
         unset($input['td']);
         unset($input['tt']);
-        // DB::enableQueryLog();
         // $trade1 = DB::table('permit')->where('id', $id)->update($input);
-        // dd(DB::getQueryLog());
         if(isset($submit)){
             $trade = new premit_model();
             $data['dat'] = $trade->primary1($id);
@@ -494,4 +475,42 @@ class Trader_applyController extends Controller
         var_dump("id1");
         return 1;
     }
+    
+    /*public function cancel_permit(Request $request){
+        // echo 'kk';
+        $trade = new premit_model();
+        $data = [];
+        $id = $request->all();
+        if ($id['id'][0] == 'P'){
+            $data['dat'] = $trade->primary1(substr($id['id'],1));
+            // var_dump($data);
+            $data['dt'] = explode(' ', $data['dat']->valid_to);
+            $data['df'] = explode(' ', $data['dat']->valid_from);
+            $data['type'] = 'Primary';
+            // DB::enableQueryLog();  
+            // var_dump($data['dat']);
+            if($data['dat']->c_status){
+                for($i=0;$i<count($id['com_id']);$i++){
+                DB::update('update trade_com set a_weight = a_weight + ? where id = ?',[$id['c_qty'][$i],$id['tdc_id'][$i]]);
+                $query = $trade->pcancel($id);
+                $data['dat'] = $trade->primary1(substr($id['id'],1))[0];
+            }
+        }
+        elseif ($id['id'][0] == 'S'){
+            $data['dat'] = $trade->secondary1(substr($id['id'], 1))[0];
+            $data['dat']->value = $data['dat']->amt * $data['dat']->a_weight;
+            $data['dat']->veh_detail = $data['dat']->veh_id;
+            $data['dat']->valid_to = $data['dat']->to_date;
+            $data['dat']->valid_from = $data['dat']->from_date;
+            $data['dt'] = explode(' ', $data['dat']->valid_to);
+            $data['df'] = explode(' ', $data['dat']->from_date);
+            if($data['dat']->c_status){
+                DB::update('update trade set a_weight = a_weight + ? where id = ?',[$data['dat']->a_weight,$data['dat']->t_id]);
+                $query = $trade->scancel(substr($id['id'], 1));
+            }
+            $data['type'] = 'Secondary';
+        }
+        return view('secondary-permit',$data);
+    }*/
+
 }
