@@ -248,7 +248,7 @@
                         @endphp
                         <div class="list com">
                             <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label>Commodity <span class="text-danger">*</span></label>
                                 <select class="form-control pri-form commodity" name="com_id[]" onchange="com_ch_1($(this).parent())">
@@ -262,7 +262,7 @@
                                 <!-- <input type="" name="" class="form-control pri-form"> -->
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label class="aweight"> Quantity ( Avaliable Quantity )<span class="text-danger">*</span></label>
                                 <input type="" name="a_weight[]" class="a_weight form-control pri-form" value="@isset($dat->tc[$j]){{$dat->tc[$j]->a_weight}}@endisset" onchange="awht_ch($(this).parent())">
@@ -272,12 +272,20 @@
                                 <input type="hidden" name="q_id[]" class="q_id" value="@if(isset($dat->tc[$j]->q_id)){{$dat->tc[$j]->q_id }}@endif">
                                 </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label>Trade Value (INR) <span class="text-danger">*</span></label>
                                 <input type="" name="trade_val[]" class="trade_val form-control pri-form" value="@isset($dat->tc[$j]->trade_value){{$dat->tc[$j]->trade_value}}@endisset">
                             </div>
                         </div>
+                        @if(isset($dt))
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for=""> Cancelled Quantity </label>
+                                    <input type="number" name="c_qty[]" class="c_qty form-control pri-form">
+                                </div>
+                            </div>
+                        @endif
                         </div>
                     </div>
                      @php } @endphp
@@ -347,12 +355,6 @@
                             </div>
                         </div>
                         @if(isset($dt))
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label for=""> Cancelled Quantity </label>
-                                <input type="number" class="c_qty form-control pri-form">
-                            </div>
-                        </div>
                         <div class="col-md-4 c_r" style="display: none;">
                             <div class="form-group">
                                 <label>Cancelation Reason <span class="text-danger">*</span></label>
@@ -371,7 +373,7 @@
                         @if(strtotime($dt[0]." ".$dt[1]) > time())
                         <input type="submit" value="Early Arrival" class="btn" name="submit">
                         <input type="submit" value="SOS" class="btn" name="submit">
-                        <button id="cancelbtn" class="btn">Cancel Permit</button>    
+                        <button type="submit" value="Cancel"  name="submit" class="btn">Cancel Permit</button>
                         <input type="submit" class="btn" value="Edit Permit">
                         @endif
                     @else
@@ -380,13 +382,13 @@
                     @if(isset($dat->name)) <a href="{{url('print-permit')}}/S{{ $dat->id }}" name="" class="btn">Print Permit</a> @endif 
                     </div>
                 </form>
-                <form action="{{url('cancel-permit')}}" method="post" class="form2">
-                @csrf    
-                <input type="hidden" name="c_qty" class="c_qty1">
-                    <input type="hidden" name="c_reason" class="c_reason1">
-                    <input type="hidden" name="id" class="c_id1">
-                    <input type="hidden" name="tid" class="c_tid1">
-                </form>
+                <!--form action="{{url('cancel-permit')}}" method="post" class="form2">
+                    @csrf    
+                    <input type="hidden" name="c_qty" class="c_qty1">
+                        <input type="hidden" name="c_reason" class="c_reason1">
+                        <input type="hidden" name="id" class="c_id1">
+                        <input type="hidden" name="tid" class="c_tid1">
+                    </form-->
             </div>
         </div>
     </div>

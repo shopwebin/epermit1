@@ -113,9 +113,15 @@
                         $('.aqu').attr('onclick','addcom1('+(id+1)+')');                        
                     }
                     }
+                    function addcom2(id) {
+                        if(id < {{count($view[0]->tc)}}){
+                            $('.repeat-div2').append("<div class = 'list  col-md-12 tdqc"+id+"'>"+$('.repeat-div2').find('.tdqc').html()+"</div>");
+                            $('.tqc').attr('onclick','addcom2('+(id+1)+')');                        
+                        }
+                    }
                 </script>
                 <style>
-                    .repeat-div1 {
+                    .repeat-div1,.repeat-div2 {
                         border: 1px dashed #0005;
                         position: relative;
                         margin: 12px 0 20px;
@@ -216,6 +222,17 @@
                                     });
                                     }*/
                         }
+                        function qtt(a){
+                            a=a.parent().parent();
+                            var q = parseInt(a.find(".a_qty").val());
+                            var t = a.find(".qtt").val();
+                            // console.log(q);
+                            // console.log(t);
+                            if(q < t){
+                                alert("Enter quantity below or equal available quantity");                                
+                                a.find(".qtt").val(q);
+                            }
+                        }
                         function com_val_2(a){
                             a=a.parent().parent();
                             var c = a.find("#p_com_id").val();
@@ -227,6 +244,20 @@
                                     a.find('.a_qty').attr('data-val',{{ $tc->a_weight }});
                                 }
                             @endforeach
+                        }
+                        function com_val_3(a) {
+                            a=a.parent().parent();
+                            var c = a.find("#p_com_id").val();
+                            @foreach($view[0]->tc as $key=>$tc)
+                            console.log();
+                                if({{$tc->com_id}} == c){
+                                    a.find('.quantity_id').val({{ $tc->q_id }});
+                                    a.find('.a_qty').val({{ $tc->a_weight }});
+                                    a.find('.trade_type').val("{{ $tc->trade_type }}");
+                                    a.find('.trade_value').val({{ $tc->trade_value }});
+
+                                }
+                            @endforeach                            
                         }
                     </script>
                     <div class="ordered-list col-12 repeat-div">
@@ -612,17 +643,18 @@
                         </div>
                     </div>
                 </form>
+                <form action="{{url('trader_transfer')}}" method="post">
+                @csrf
                 <div class="row transfer-quantity-div box" style="display: none;">
                     <div class="col-12 no-gap">
-                    <form action="{{url('trader_transfer')}}" method="post">
-                        @csrf
                         <div class="row bordered bg-color1-1">
                             <div class="col-md-8">
                                 <dl>
                                     <dt>Address</dt>
                                     <input type="hidden" name="id" value="{{ $view[0]->id }}">
-                                    <dd>@if(isset($view[0]->ad1)){{$view[0]->ad1}}@else<input type="text" name="ad1" placeholder="Enter Address" value="{{$view[0]->ad1}}">@endif
-                                        ,@if(isset($view[0]->ad2)){{$view[0]->ad2}}@else<input type="text" name="ad2" placeholder="Enter Address" value="{{$view[0]->ad2}}">@endif</dd>
+                                    <dd>147,m.g.road</dd>
+                                    {{-- @if(isset($view[0]->ad1)){{$view[0]->ad1}}@else<input type="text" name="ad1" placeholder="Enter Address" value="{{$view[0]->ad1}}">@endif
+                                        ,@if(isset($view[0]->ad2)){{$view[0]->ad2}}@else<input type="text" name="ad2" placeholder="Enter Address" value="{{$view[0]->ad2}}">@endif --}}
                                 </dl>
                             </div>
                             <div class="col-md-4">
@@ -644,14 +676,14 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label>Commodity <span class="text-danger">*</span></label>
-                            @foreach($commodity as $com)@if($com->com_id == $view[0]->commodity_id)<input type="" name="c_id" value="{{ $view[0]->tc[0]->com_name }}" class="form-control pri-form" readonly>@endif @endforeach
+                            <label>Vehicle Number <span class="text-danger">*</span></label>
+                            <input type="" name="veh_no" class="form-control pri-form">
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label>Balance Quantity <span class="text-danger">*</span></label>
-                            <input type="" name="a_weight" class="form-control pri-form" value="{{ $view[0]->a_weight }}" readonly>
+                            <label>Driver Mobile Number <span class="text-danger">*</span></label>
+                            <input type="" name="mob_no" class="form-control pri-form" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="10">
                         </div>
                     </div>
                     <div class="col-sm-8 offset-sm-2">
@@ -694,7 +726,7 @@
                                         $('.trader_id').val(result[0].id);
                                     });
                                 };
-                                $(document).ready(function() {
+                                /*$(document).ready(function() {
                                     $(".qtt").change(function() {
                                         var w = $('.qtt').val();
                                         if(w > {{ $view[0]->tc[0]->a_weight }}){
@@ -705,7 +737,7 @@
                                             $('.trade_value').val(w * {{ $view[0]->tc[0]->amt}});
                                         }
                                     });
-                                });
+                                });*/
                             </script>
                             <div class="">
                                 <div class="form-group">
@@ -744,29 +776,40 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Quantity to Transfer <span class="text-danger">*</span></label>
-                                    <input type="" name="qtt" class="qtt form-control pri-form">
-                                    <input type="hidden" name="trader_id" class="trader_id form-control pri-form" value="{{$view[0]->trader_id}}">
-                                    <input type="hidden" name="commodity_id" class="commodity_id form-control pri-form" value="{{$view[0]->commodity_id}}">
-                                    <input type="hidden" name="quantity_id" class="quantity_id form-control pri-form" value="{{$view[0]->quantity_id}}">
-                                    <input type="hidden" name="trade_type" class="trade_type form-control pri-form" value="{{$view[0]->trade_type}}">
-                                    <input type="hidden" name="trade_value" class="trade_value form-control pri-form" value="">
-                                    <input type="hidden" name="p_status" class="p_status form-control pri-form" value="{{$view[0]->p_status}}">
+                            <div class="ordered-list col-12 repeat-div2">
+                                <div class="list tdqc">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Commodity <span class="text-danger">*</span></label>
+                                                <select name="c_id[]" id="p_com_id" class="form-control" onchange="com_val_3($(this).parent())">
+                                                    <option value="">Select</option>
+                                                    @foreach( $view[0]->tc as $tc )
+                                                        <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                {{--@foreach($commodity as $com)@if($com->com_id == $view[0]->tc[0]->com_id)<input type="" name="c_id" value="{{ $view[0]->tc[0]->com_name }}" class="form-control pri-form" readonly>@endif
+                                                @endforeach --}}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Balance Quantity <span class="text-danger">*</span></label>
+                                                <input type="" name="a_weight[]" class="a_qty form-control pri-form" value="{{ $view[0]->a_weight }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <label>Quantity to Transfer <span class="text-danger">*</span></label>
+                                                <input type="" name="qtt[]" class="qtt form-control pri-form" onchange="qtt($(this).parent())">
+                                                <input type="hidden" name="trade_type[]" class="trade_type form-control pri-form" value="{{$view[0]->trade_type}}">
+                                                <input type="hidden" name="trade_value[]" class="trade_value form-control pri-form" value="">
+                                                <input type="hidden" name="quantity_id[]" class="quantity_id form-control pri-form" value="{{$view[0]->quantity_id}}">
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Vehicle Number <span class="text-danger">*</span></label>
-                                    <input type="" name="veh_no" class="form-control pri-form">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>Driver Mobile Number <span class="text-danger">*</span></label>
-                                    <input type="" name="mob_no" class="form-control pri-form" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" maxlength="10">
-                                </div>
+                                <div class="add-new tqc" onclick="addcom2(1)"><i class="priya-plus"></i></div>
                             </div>
                             <div class="col-md-12">
                                 <h5 class="mt-3">Consignee Details</h5>
@@ -775,6 +818,8 @@
                                 <div class="form-group">
                                     <label>Consignee Name <span class="text-danger">*</span></label>
                                     <input type="" name="name" class="form-control pri-form">
+                                    <input type="hidden" name="trader_id" class="trader_id form-control pri-form" value="{{$view[0]->trader_id}}">
+                                    <input type="hidden" name="p_status" class="p_status form-control pri-form" value="{{$view[0]->p_status}}">
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -898,8 +943,7 @@
                     });
                 </script>
 
-                <form action="{{url('retail_sale')}}" method="post">
-                @csrf
+                <form action="{{url('retail_sale')}}" method="post">@csrf
                 <div class="row retail-sale-div box" style="display: none;">
                     <!-- <div class="col-md-12">
                                 <h6>Retail Sale</h6>
@@ -1230,7 +1274,7 @@
     });
 </script>
 </body>
-{{-- @if(isset($dat)) @dd($dat) @endif 
- @dd($view) --}}
+ @if(isset($dat)) @dd($dat) @endif 
+ @dd($view) 
 
 </html>

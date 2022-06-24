@@ -204,9 +204,9 @@ class Trader_applyController extends Controller
             $data['com_name'] = '';
             $data['value'] = 0;
             $data['qty_name'] = '';
-            foreach($data['dat']->mp as $mp){                
+            foreach($data['dat']->mp as $mp){
                 if($mp->c_qty){
-                    $data['a_weight'] .= ','.$mp->a_weight.'-'.$mp->c_qty;
+                    $data['a_weight'] .= ','.$mp->a_weight.'-'.$mp->c_qty.'='.($mp->a_weight-$mp->c_qty);
                 }else{
                 $data['a_weight'] .= ','.$mp->a_weight; }
                 $data['com_name'] .= ','.$mp->com_name;
@@ -262,7 +262,8 @@ class Trader_applyController extends Controller
     public function edit_sec_permit(Request $request){
         $trade = new premit_model();
         $query = $trade->edit2($request);
-        return redirect()->back()->with('alert','Permit updated Successfully');
+        // return redirect()->back()->with('alert','Permit updated Successfully');
+        return  redirect('print-permit/S'.substr($request->input('id'),1));
     }
 
     public function secondaryCreating1($td){
