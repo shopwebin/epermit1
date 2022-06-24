@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use phpDocumentor\Reflection\PseudoTypes\True_;
 
-class tradelist_model extends Model
-{
+class tradelist_model extends Model{
     use HasFactory;
     public static function add($request){
         $query['paid'] = $request->input('p_status');
@@ -64,16 +63,17 @@ class tradelist_model extends Model
             'state_id' => $request->input('state_id'),
             'district_id' => $request->input('dis_id') ,
             'mandal_id' => $request->input('mdl_id') ,
-            'commodity_id' => $request->input('commodity_id') ,
-            'quantity_id' => $request->input('quantity_id') ,
-            'weight' => $request->input('qtt'),
-            'a_weight' =>   $request->input('qtt'),
-            'trade_type'=> $request->input('trade_type'),
-            'trade_value' => $request->input('trade_value'),
-            'm_fee' => ($request->input('trade_value')/50),
+            // 'commodity_id' => $request->input('commodity_id') ,
+            // 'quantity_id' => $request->input('quantity_id') ,
+            // 'weight' => $request->input('qtt'),
+            // 'a_weight' =>   $request->input('qtt'),
+            // 'trade_type'=> $request->input('trade_type'),
+            // 'trade_value' => $request->input('trade_value'),
+            // 'm_fee' => ($request->input('trade_value')/50),
             'amc_id' => $request->input('amc_id'),
             'p_status' => $request->input('p_status'),
             'trader_id' => $request->input('trader_id'),
+            
         ]);
         return $trade;
     }
@@ -163,7 +163,7 @@ class tradelist_model extends Model
         $i=0;
         foreach($dat as $d){
             $id = $d->id;
-            $dat[$i]->sec = DB::table('spermit')->where('t_id',$id)->where('c_status',1)->get('id')->all();
+            $dat[$i]->sec = DB::table('spermit')->where('t_id',$id)->get('id')->all();
             $dat[$i]->trade_com = DB::select('select `trade_com`.*,`commodity`.`com_name` as `cty`,`quantity`.`qty_name` as `qty` from `trade_com` inner join `commodity` on `commodity`.`com_id` = `trade_com`.`com_id` inner join `quantity` on `quantity`.`id` = `trade_com`.`q_id` where `t_id` = ?',[$d->id]);
             foreach($dat[$i]->trade_com as $tc){
                 if($tc->trade_type == 'Sales'){
