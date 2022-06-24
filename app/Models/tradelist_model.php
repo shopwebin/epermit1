@@ -73,7 +73,7 @@ class tradelist_model extends Model{
             'amc_id' => $request->input('amc_id'),
             'p_status' => $request->input('p_status'),
             'trader_id' => $request->input('trader_id'),
-            
+
         ]);
         return $trade;
     }
@@ -131,9 +131,6 @@ class tradelist_model extends Model{
     public function retail_sale($request){
         $id = DB::table('retail')->insertGetId([
             'name' => $request->input('name'),
-            'rad1' => $request->input('rad1'),
-            'rad2' => $request->input('rad2'),
-            'a_qty' => $request->input('a_weight'),
             'ad1' => $request->input('ad1'),
             'ad2' => $request->input('ad2'),
             'st_id' => $request->input('state_id'),
@@ -142,13 +139,27 @@ class tradelist_model extends Model{
             'amc_id' => $request->input('amc_id'),
             'invoice' => $request->input('invoice'),
             'trade_id' => $request->input('trade_id'),
-            'trade_value' => $request->input('trade_value'),
-            'com_name' => $request->input('com_name'),
             'mobile' => $request->input('mobile'),
             'veh_detail' => $request->input('veh_detail'),
             'trader_id' => 4,
         ]);
-        DB::update('update trade set a_weight = a_weight - ? where id = ?', [$request->input('a_weight'),$request->input('trade_id')]);
+        for ($i=0; $i < count($request->input('qtt1')); $i++) { 
+            DB::table('multi_permit')->insertGetId([
+                'p_id'=>'R'.$id,
+                'q_id'=>$request->input('q_id')[$i],
+                'weight'=>$request->input('a_weight')[$i],
+                'a_weight'=>$request->input('qtt1')[$i],
+                'trade_value'=>$request->input('value1')[$i],
+                'com_id'=>$request->input('c_id')[$i],
+            ]);
+            DB::update('update `trade_com` set `a_weight` = `a_weight` - ? where `t_id` = ? and `com_id` = ?',[$request->input('qtt1')[$i],$request->input('trade_id'),$request->input('c_id')[$i]]);
+        }
+        /*  'rad1' => $request->input('rad1'),
+            'rad2' => $request->input('rad2'),
+            'a_qty' => $request->input('a_weight'),
+            'trade_value' => $request->input('trade_value'),
+            'com_name' => $request->input('com_name'),*/
+        // DB::update('update trade set a_weight = a_weight - ? where id = ?', [$request->input('a_weight'),$request->input('trade_id')]);
         return $id;
     }
 

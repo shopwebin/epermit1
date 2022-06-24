@@ -199,12 +199,12 @@ class premit_model extends Model
     public function aqua1($id){
         $q = DB::select('select trader_apply.lic_no,aepermit.*,trader_apply.tname,trader_apply.address,trader_apply.firmname,trader_apply.firmaddress from aepermit join trade on trade.id = aepermit.t_id join trader_apply on trade.trader_id = trader_apply.id where aepermit.id = ?', [$id])[0];
         $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "A'.$id.'"');
-        
         return $q;
     }
 
     public function retail_print($id){
-        $q = DB::select('select trader_apply.lic_no,retail.*,trader_apply.tname,trader_apply.address,trader_apply.firmname,trader_apply.firmaddress,quantity.qty_name from retail join trade on trade.id = retail.trade_id join trader_apply on trade.trader_id = trader_apply.id join commodity on commodity.com_id = trade.commodity_id join  quantity on quantity.id = commodity.q_id where retail.id = ?', [$id]);
+        $q = DB::select('select retail.*,trader_apply.lic_no,trader_apply.tname,trader_apply.address,trader_apply.firmname,trader_apply.firmaddress from retail JOIN trade on trade.id = retail.trade_id JOIN trader_apply on trader_apply.id = trade.trader_id WHERE retail.id = ?', [$id])[0];
+        $q->mp = DB::select('select `multi_permit`.*,quantity.qty_name,commodity.com_name from `multi_permit` JOIN quantity on quantity.id = `multi_permit`.q_id JOIN commodity on commodity.com_id = `multi_permit`.com_id where p_id = "R'.$id.'"');
         return $q;
     }
 

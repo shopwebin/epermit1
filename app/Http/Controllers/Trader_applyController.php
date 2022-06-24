@@ -94,8 +94,7 @@ class Trader_applyController extends Controller
         return $a;
     }
 
-    public function update_trade(Request $request)
-    {
+    public function update_trade(Request $request){
         $input = $request->all();
         $input['trade_id'] = substr($input['trade_id'],1);
         /* $a = DB::update('update trade set ad1 = ?,ad2 = ? where id = ?', [$input['ad1'],$input['ad2'],$input['trade_id']]);
@@ -137,11 +136,10 @@ class Trader_applyController extends Controller
         ]);
     }   
     // dd(DB::getQueryLog());
-        // return redirect('print-permit/PP'.$b)->with('alert',"Trade processed permit no.-PP".$b." Sucessfully");
+    // return redirect('print-permit/PP'.$b)->with('alert',"Trade processed permit no.-PP".$b." Sucessfully");
     }
 
-    public function print_permit($id)
-    {
+    public function print_permit($id){
         $trade = new premit_model();
         $data = [];        
         if ($id[0] == 'P'){
@@ -234,7 +232,7 @@ class Trader_applyController extends Controller
             }
         }
         elseif ($id[0] == 'R'){
-            $data['dat'] = $trade->retail_print(substr($id, 1))[0];
+            $data['dat'] = $trade->retail_print(substr($id, 1));
             $data['dat']->valid_from = $data['dat']->created;
             $data['dat']->a_weight = $data['dat']->a_qty;
             $data['dat']->value = $data['dat']->trade_value;

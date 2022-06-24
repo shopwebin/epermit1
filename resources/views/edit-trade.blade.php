@@ -119,9 +119,15 @@
                             $('.tqc').attr('onclick','addcom2('+(id+1)+')');                        
                         }
                     }
+                    function addcom3(id) {
+                        if(id < {{count($view[0]->tc)}}){
+                            $('.repeat-div3').append("<div class = 'list  col-md-12 rs"+id+"'>"+$('.repeat-div3').find('.rs').html()+"</div>");
+                            $('.rsc').attr('onclick','addcom3('+(id+1)+')');                        
+                        }
+                    }
                 </script>
                 <style>
-                    .repeat-div1,.repeat-div2 {
+                    .repeat-div1,.repeat-div2,.repeat-div3 {
                         border: 1px dashed #0005;
                         position: relative;
                         margin: 12px 0 20px;
@@ -194,6 +200,7 @@
                                 }
                             });
                         });
+
                         function com_val_1(a){
                             a=a.parent().parent();
                             var c = a.find("#p_com_id").val();
@@ -233,6 +240,17 @@
                                 a.find(".qtt").val(q);
                             }
                         }
+                        function qtt1(a){
+                            a=a.parent().parent();
+                            var q = parseInt(a.find(".a_qty1").val());
+                            var t = a.find(".qtt1").val();
+                            if(q < t){
+                                alert("Enter quantity below or equal available quantity");                                
+                                a.find(".qtt1").val(q);
+                            } else {
+                                a.find('.value1').val(t*parseInt(a.find('.value1').val())/q);
+                            }
+                        }
                         function com_val_2(a){
                             a=a.parent().parent();
                             var c = a.find("#p_com_id").val();
@@ -256,6 +274,18 @@
                                     a.find('.trade_type').val("{{ $tc->trade_type }}");
                                     a.find('.trade_value').val({{ $tc->trade_value }});
 
+                                }
+                            @endforeach                            
+                        }
+                        function com_val_4(a) {
+                            a=a.parent().parent();
+                            var c = a.find("#p_com_id").val();
+                            @foreach($view[0]->tc as $key=>$tc)
+                            console.log();
+                                if({{$tc->com_id}} == c){
+                                    a.find('.q_id1').val({{ $tc->q_id }});
+                                    a.find('.a_qty1').val({{ $tc->a_weight }});
+                                    a.find('.value1').val({{ $tc->trade_value }});
                                 }
                             @endforeach                            
                         }
@@ -954,32 +984,34 @@
                                 <dl>
                                     <dt>Address</dt>
                                     <input type="hidden" name="id" value="{{ $view[0]->id }}">
-                                    <dd>@if(isset($view[0]->ad1)){{$view[0]->ad1}}@else<input type="text" name="ad1" placeholder="Enter Address" value="{{$view[0]->ad1}}">@endif
-                                        ,@if(isset($view[0]->ad2)){{$view[0]->ad2}}@else<input type="text" name="ad2" placeholder="Enter Address" value="{{$view[0]->ad2}}">@endif</dd>
+                                    <dd>147,m.g.road</dd>
+                                    {{-- @if(isset($view[0]->ad1)){{$view[0]->ad1}}@else<input type="text" name="ad1" placeholder="Enter Address" value="{{$view[0]->ad1}}">@endif
+                                        ,@if(isset($view[0]->ad2)){{$view[0]->ad2}}@else<input type="text" name="ad2" placeholder="Enter Address" value="{{$view[0]->ad2}}">@endif--}}
                                     </dd>
                                 </dl>
                             </div>
-                            <div class="col-md-4">
+                            {{--
+                                <div class="col-md-4">
                                 <dl>
                                     <dt>Current Quantity</dt>
                                     <dd>@if(isset($view[0]->a_weight)){{$view[0]->a_weight}}@endif</dd>
                                     <!--<dd>@if(isset($qty_amt[0]->a_qty)){{$qty_amt[0]->a_qty}}@endif</dd>-->
                                 </dl>
-                            </div>
-                            <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
                                 <dl>
                                     <dt>Reference Trade</dt>
                                     <dd><input type="text" name="rad1" placeholder="Enter Address" value="">,
                                     <input type="text" name="rad2" placeholder="Enter Address" value=""></dd>
                                 </dl>
-                            </div>
-                            <div class="col-md-4">
+                                </div>
+                                <div class="col-md-4">
                                 <dl>
                                     <dt>Commodity</dt>
                                     <input type="hidden" name="com_name" value="{{$view[0]->tc[0]->com_name}}">
                                     <dd>{{$view[0]->tc[0]->com_name}}</dd>
                                 </dl>
-                            </div>
+                                </div>--}}
                             <div class="col-md-4">
                                 <dl>
                                     <dt>Balance Quantity</dt>
@@ -1010,6 +1042,49 @@
                             <input type="" name="ad2" class="form-control pri-form" required>
                         </div>
                     </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label>Invoice Number <span class="text-danger">*</span></label>
+                            <input type="" name="invoice" class="form-control pri-form" required>
+                        </div>
+                    </div>
+                            <div class="ordered-list col-12 repeat-div3">
+                                <div class="list rs">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Commodity <span class="text-danger">*</span></label>
+                                                <select name="c_id[]" id="p_com_id" class="form-control" onchange="com_val_4($(this).parent())">
+                                                    <option value="">Select</option>
+                                                    @foreach( $view[0]->tc as $tc )
+                                                        <option value="{{ $tc->com_id }}">{{ $tc->com_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label>Balance Quantity <span class="text-danger">*</span></label>
+                                                <input type="" name="a_weight[]" class="a_qty1 form-control pri-form" value="{{ $view[0]->a_weight }}" readonly>
+                                                <input type="hidden" name="q_id[]" class="q_id1 form-control pri-form" value="{{ $view[0]->a_weight }}" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label> Sales Quantity <span class="text-danger">*</span></label>
+                                                <input type="" name="qtt1[]" class="qtt1 form-control pri-form" onchange="qtt1($(this).parent())">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label> Trade Value <span class="text-danger">*</span></label>
+                                                <input type="" name="value1[]" class="value1 form-control pri-form">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="add-new rsc" onclick="addcom3(1)"><i class="priya-plus"></i></div>
+                            </div>
                     <div class="col-md-3">
                         <div class="form-group">
                             <label>State <span class="text-danger">*</span></label>
@@ -1045,18 +1120,12 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label>Invoice Number <span class="text-danger">*</span></label>
-                            <input type="" name="invoice" class="form-control pri-form" required>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
+                    <!--div class="col-md-3">
                         <div class="form-group">
                             <label> Amount <span class="text-danger">*</span></label>
                             <input type="" name="trade_value" class="trade_value form-control pri-form" required>
                         </div>
-                    </div>
+                    </div-->
                     <div class="col-md-3">
                         <div class="form-group">
                             <label> Mobile Number <span class="text-danger">*</span></label>
